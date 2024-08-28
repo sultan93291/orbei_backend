@@ -20,7 +20,7 @@ const router = require("./src/RouteHandler/routeHandler.js");
 const { ConnectDb } = require("./src/ConnectDb/ConnetDb.js");
 
 
-// initializing app and router
+// initializing app 
 const app = express();
 app.use(express.json());
 
