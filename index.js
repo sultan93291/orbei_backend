@@ -34,6 +34,6 @@ ConnectDb();
 //  configuration of port 
 app.listen(process.env.PORT || 3000, () => {
   console.log(
-    chalk.bgBlueBright(`listening on port http://localhost:${process.env.PORT}`)
+    chalk.bgBlueBright(`listening on port http://localhost:${process.env.PORT || 3000}`)
   );
 });
