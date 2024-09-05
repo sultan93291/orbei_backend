@@ -13,12 +13,18 @@
 const express = require("express");
 const router = express.Router();
 
+// internal dependencies
+const { CreateUser} =  require("../Routes/CreateUser/CreateUser.js")
 
 //  demo route
 router.get("/", (req, res) => {
   res.send("router is working");
 });
 
+
+
+// create user 
+router.post(`/${process.env.VERSION_NAME}/create-user`, CreateUser);
 
 // exporting the router . to use the router on app
 module.exports = router;
