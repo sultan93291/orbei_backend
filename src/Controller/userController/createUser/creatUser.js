@@ -13,18 +13,13 @@
 const bcrypt = require("bcrypt");
 
 // internal dependencies
-const { user } = require("../../Schema/UserSchema.js");
-const { apiError } = require("../../utils/apiError.js");
-const { apiSuccess } = require("../../utils/apiSuccess.js");
+const { user } = require("../../../Schema/UserSchema.js");
+const { apiError } = require("../../../utils/apiError.js");
+const { apiSuccess } = require("../../../utils/apiSuccess.js");
+const {emailChecker,passwordChecker,numberChecker } = require("../../../utils/checker.js");
 
 // function for handling creating users functionality
 const CreateUser = async (req, res) => {
-  // regex for validating data
-  const EmailRegex = /^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$/;
-  const TelePhoneRegex = /^(?:\+8801|01)[3-9]\d{8}$/;
-  const PasswordRegex =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#+])[A-Za-z\d@$!%*?&#+]{8,32}$/;
-
   try {
     //extracting user data from req.body
     const {
@@ -57,14 +52,14 @@ const CreateUser = async (req, res) => {
         .status(400)
         .json(new apiError(400, "please enter last name", null, false));
     }
-    if (!EmailRegex.test(emailAddress)) {
+    if (!emailChecker(emailAddress)) {
       return res
         .status(400)
         .json(
           new apiError(400, "please enter a valid email address", null, false)
         );
     }
-    if (!TelePhoneRegex.test(telephone)) {
+    if (!numberChecker(telephone)) {
       return res
         .status(400)
         .json(
@@ -83,7 +78,7 @@ const CreateUser = async (req, res) => {
         .status(400)
         .json(new apiError(400, "please enter your  city ", null, false));
     }
-    if (!PasswordRegex.test(password)) {
+    if (!passwordChecker(password)) {
       return res
         .status(400)
         .json(new apiError(400, "please enter a valid password", null, false));
@@ -131,9 +126,7 @@ const CreateUser = async (req, res) => {
           )
         );
     }
-
   } catch (error) {
-
     // if something wrong happened during try operation catch except that it will return a server side problem response
     return res
       .status(500)
