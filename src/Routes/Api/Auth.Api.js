@@ -15,8 +15,14 @@ const { Router } = express;
 const router = Router();
 
 //internal dependencies
-const {CreateUser} = require("../../Controller/userController/createUser/creatUser.js")
+const {
+  CreateUser,
+} = require("../../Controller/userController/createUser/creatUser.js");
+const {
+  loginUser,
+} = require("../../Controller/userController/loginUser/loginUser.js");
 const { apiSuccess } = require("../../utils/apiSuccess.js");
+const {authguard} = require("../../middleware/authGuard.js")
 
 router.route("/get-api").get((req, res) => {
   res
@@ -26,5 +32,6 @@ router.route("/get-api").get((req, res) => {
     );
 });
 router.route("/create-user").post(CreateUser);
+router.route("/login-user").post( authguard ,  loginUser);
 
 module.exports = router;

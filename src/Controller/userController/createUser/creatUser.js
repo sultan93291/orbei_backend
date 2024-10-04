@@ -8,7 +8,6 @@
 // Dependencies
 
 // External dependencies
-const bcrypt = require("bcrypt");
 
 // Internal dependencies
 const { user } = require("../../../Schema/UserSchema.js");
@@ -17,12 +16,13 @@ const { apiSuccess } = require("../../../utils/apiSuccess.js");
 const { asyncHandler } = require("../../../utils/asyncaHandler.js");
 const { mailSender } = require("../../../utils/sendMail.js");
 const { otpGenerator } = require("../../../helpers/otpGenerator.js");
-const { generateAccessToken } = require("../../../helpers/helper.js");
+
 const {
   emailChecker,
   passwordChecker,
   numberChecker,
 } = require("../../../utils/checker.js");
+const { hashedPassword, generateAccessToken } = require("../../../helpers/helper.js");
 
 const options = {
   httpOnly: true,
@@ -87,9 +87,9 @@ const CreateUser = asyncHandler(async (req, res, next) => {
       return next(new apiError(400, "User already exists", null, false));
     }
 
-    // Generating salt and hashing password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    // calling password hashing function
+    const hashedPass = await hashedPassword(password)
+    
 
     // Creating a new user object
     const newUser = new user({
@@ -98,7 +98,7 @@ const CreateUser = asyncHandler(async (req, res, next) => {
       emailAddress,
       telephone,
       permanentAddress,
-      password: hashedPassword,
+      password: hashedPass,
       city,
     });
 
@@ -116,7 +116,6 @@ const CreateUser = asyncHandler(async (req, res, next) => {
     });
 
     // generate token
-
     const token = await generateAccessToken(emailAddress);
 
     if (savedUser || token || mailInfo) {
@@ -156,7 +155,7 @@ const CreateUser = asyncHandler(async (req, res, next) => {
   } catch (error) {
     // Forwarding any unexpected errors to the error-handling middleware
     return next(
-      new apiError(500, "Server-side problem: " + error.message, error, false)
+      new apiError(500, "Server-side problem: " + error.message, null, false)
     );
   }
 });

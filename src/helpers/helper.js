@@ -8,14 +8,35 @@
 // Dependencies
 // External dependencies
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 
 /**
  * Generates an access token for the given email address.
  * @param {string} emailAddress - The email address of the user.
  * @returns {string} The generated JWT access token.
  */
+
+// password hashing function
+const hashedPassword = async (password) => {
+  try {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    return hashedPassword;
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+// password decoding function
+const decodePassword = async (password, hashedPassword) => {
+  const passwordResult = await bcrypt.compare(password, hashedPassword);
+
+  return passwordResult;
+};
+
+// token genearate function
 const generateAccessToken = (emailAddress) => {
-  
   try {
     const accessToken = jwt.sign(
       {
@@ -33,4 +54,4 @@ const generateAccessToken = (emailAddress) => {
   }
 };
 
-module.exports = { generateAccessToken };
+module.exports = { generateAccessToken, hashedPassword, decodePassword };
