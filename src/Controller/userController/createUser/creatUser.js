@@ -1,27 +1,38 @@
-{
-  /*
-   * author: Md . Abib Ahmed Dipto
-   * date : 05-09-2024
-   * description : this is the create user file . thi file take all required properties from user . and validate them if everything okay then then it will start hashing the password after hashing it will check is user already if existed it will return a error else it will crate a user and after it will return 200 ok status . mean that time if any error occured it will be a server side problem so the try catch the catch will catch the problem and it will return the error  .
-   * copyright : abib.web.dev@gmail.com
-   */
-}
+/*
+ * author: Md. Abib Ahmed Dipto
+ * date: 05-09-2024
+ * description: This file handles the creation of a new user. It takes all required properties from the request body, validates them, and if everything is valid, it hashes the password. It then checks if the user already exists; if so, it returns an error; otherwise, it creates a new user and responds with a 200 OK status. If any errors occur during this process, a server-side error response will be returned.
+ * copyright: abib.web.dev@gmail.com
+ */
 
-// dependencies
+// Dependencies
 
-// external dependencies
+// External dependencies
 const bcrypt = require("bcrypt");
 
-// internal dependencies
+// Internal dependencies
 const { user } = require("../../../Schema/UserSchema.js");
 const { apiError } = require("../../../utils/apiError.js");
 const { apiSuccess } = require("../../../utils/apiSuccess.js");
-const {emailChecker,passwordChecker,numberChecker } = require("../../../utils/checker.js");
+const { asyncHandler } = require("../../../utils/asyncaHandler.js");
+const { mailSender } = require("../../../utils/sendMail.js");
+const { otpGenerator } = require("../../../helpers/otpGenerator.js");
+const { generateAccessToken } = require("../../../helpers/helper.js");
+const {
+  emailChecker,
+  passwordChecker,
+  numberChecker,
+} = require("../../../utils/checker.js");
 
-// function for handling creating users functionality
-const CreateUser = async (req, res) => {
+const options = {
+  httpOnly: true,
+  secure: true,
+};
+
+// Function for handling user creation
+const CreateUser = asyncHandler(async (req, res, next) => {
   try {
-    //extracting user data from req.body
+    // Extracting user data from req.body
     const {
       firstName,
       lastName,
@@ -40,99 +51,115 @@ const CreateUser = async (req, res) => {
       avatar,
     } = req.body;
 
-    // validating all data if every thing is valid then they won't return anything . if anything invalid only then it will return error response object
-
+    // Validating all data
     if (!firstName) {
-      return res
-        .status(400)
-        .json(new apiError(400, "please enter first name", null, false));
+      return next(new apiError(400, "Please enter first name", null, false));
     }
     if (!lastName) {
-      return res
-        .status(400)
-        .json(new apiError(400, "please enter last name", null, false));
+      return next(new apiError(400, "Please enter last name", null, false));
     }
     if (!emailChecker(emailAddress)) {
-      return res
-        .status(400)
-        .json(
-          new apiError(400, "please enter a valid email address", null, false)
-        );
+      return next(
+        new apiError(400, "Please enter a valid email address", null, false)
+      );
     }
     if (!numberChecker(telephone)) {
-      return res
-        .status(400)
-        .json(
-          new apiError(400, "please enter a valid email adress", null, false)
-        );
+      return next(new apiError(400, "Please enter a valid telephone number"));
     }
     if (!permanentAddress) {
-      return res
-        .status(400)
-        .json(
-          new apiError(400, "please enter your  permanent adress", null, false)
-        );
+      return next(
+        new apiError(400, "Please enter your permanent address", null, false)
+      );
     }
     if (!city) {
-      return res
-        .status(400)
-        .json(new apiError(400, "please enter your  city ", null, false));
+      return next(new apiError(400, "Please enter your city", null, false));
     }
     if (!passwordChecker(password)) {
-      return res
-        .status(400)
-        .json(new apiError(400, "please enter a valid password", null, false));
+      return next(
+        new apiError(400, "Please enter a valid password", null, false)
+      );
     }
 
-    // checking if user already exists
-    const isExisted = await user.findOne({ emailAddress: emailAddress });
+    // Checking if user already exists
+    const isExisted = await user.findOne({ emailAddress });
 
-    // if user already exists the requested will be over here
     if (isExisted) {
-      return res
-        .status(400)
-        .json(new apiError(400, "user already exists", null, false));
+      return next(new apiError(400, "User already exists", null, false));
     }
 
-    // generating salt and hashing password
+    // Generating salt and hashing password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // creating a new user object
+    // Creating a new user object
     const newUser = new user({
-      firstName: firstName,
-      lastName: lastName,
-      emailAddress: emailAddress,
-      telephone: telephone,
-      permanentAddress: permanentAddress,
+      firstName,
+      lastName,
+      emailAddress,
+      telephone,
+      permanentAddress,
       password: hashedPassword,
-      city: city,
+      city,
     });
 
-    // saving the user to database
+    // Saving the user to the database
     const savedUser = await newUser.save();
+    // generate otp
+    const Otp = await otpGenerator();
+    console.log(Otp);
 
-    // if successfully saved the user to database that's means user created successfully then it will return a success response
-    if (savedUser) {
+    // call the the mail sender fucntion
+    const mailInfo = await mailSender({
+      name: firstName,
+      emailAddress,
+      otp: Otp,
+    });
+
+    // generate token
+
+    const token = await generateAccessToken(emailAddress);
+
+    if (savedUser || token || mailInfo) {
+      // now set the opt
+      await user.findOneAndUpdate(
+        {
+          _id: savedUser._id,
+        },
+        {
+          $set: { otp: Otp },
+        },
+        {
+          new: true,
+        }
+      );
+
+      // filter out the hashed password from response object
+
+      const registeredUser = await user
+        .find({ $or: [{ emailAddress }] })
+        .select("-password");
+
+      // If successfull return a success response
       return res
         .status(200)
+        .cookie("access_token", token, options)
         .json(
           new apiSuccess(
             true,
-            "succesfully registerd user",
+            "Successfully registered user",
             200,
-            savedUser,
+            registeredUser,
             false
           )
         );
     }
   } catch (error) {
-    // if something wrong happened during try operation catch except that it will return a server side problem response
-    return res
-      .status(500)
-      .json(new apiError(500, "server side problem", error, false));
+    // Forwarding any unexpected errors to the error-handling middleware
+    return next(
+      new apiError(500, "Server-side problem: " + error.message, error, false)
+    );
   }
-};
+});
 
-// exporting create user to for using in router to handle create user requests
+// Exporting CreateUser function for routing
 module.exports = { CreateUser };

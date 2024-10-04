@@ -24,11 +24,25 @@ const port = process.env.PORT
 const app = express();
 app.use(express.json());
 
-// behalf of calling app.get('/', function) we're gonna call router.get('/',function) and the app is  gonna  use the router
+// passing all routes to the main app
 app.use(allRoutes);
 
 // calling database
 ConnectDb();
+
+
+// main error handler function
+app.use((err, req, res, next) => {
+  const statusCode = err.status || 500;
+  res.status(statusCode).json({
+    statusCode:statusCode,
+    success: false,
+    message: err.message,
+    data: err.data || null,
+  });
+});
+
+
 
 //  configuration of port
 app.listen(process.env.PORT || 3000, () => {
