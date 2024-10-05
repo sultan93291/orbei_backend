@@ -36,11 +36,11 @@ const decodePassword = async (password, hashedPassword) => {
 };
 
 // token genearate function
-const generateAccessToken = (emailAddress) => {
+const generateAccessToken = async(Data) => {
   try {
-    const accessToken = jwt.sign(
+    const accessToken = await jwt.sign(
       {
-        emailAddress,
+        Data,
       },
       process.env.SECRET_KEY,
       {

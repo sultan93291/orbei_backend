@@ -22,7 +22,10 @@ const {
   passwordChecker,
   numberChecker,
 } = require("../../../utils/checker.js");
-const { hashedPassword, generateAccessToken } = require("../../../helpers/helper.js");
+const {
+  hashedPassword,
+  generateAccessToken,
+} = require("../../../helpers/helper.js");
 
 const options = {
   httpOnly: true,
@@ -88,8 +91,7 @@ const CreateUser = asyncHandler(async (req, res, next) => {
     }
 
     // calling password hashing function
-    const hashedPass = await hashedPassword(password)
-    
+    const hashedPass = await hashedPassword(password);
 
     // Creating a new user object
     const newUser = new user({
@@ -108,6 +110,12 @@ const CreateUser = asyncHandler(async (req, res, next) => {
     const Otp = await otpGenerator();
     console.log(Otp);
 
+    const data = {
+      firstName,
+      emailAddress,
+      telephone,
+    };
+
     // call the the mail sender fucntion
     const mailInfo = await mailSender({
       name: firstName,
@@ -116,7 +124,7 @@ const CreateUser = asyncHandler(async (req, res, next) => {
     });
 
     // generate token
-    const token = await generateAccessToken(emailAddress);
+    const token = await generateAccessToken(data);
 
     if (savedUser || token || mailInfo) {
       // now set the opt
@@ -125,7 +133,7 @@ const CreateUser = asyncHandler(async (req, res, next) => {
           _id: savedUser._id,
         },
         {
-          $set: { otp: Otp },
+          $set: { otp: Otp, refreshToken: token },
         },
         {
           new: true,

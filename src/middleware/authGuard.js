@@ -39,5 +39,4 @@ const authguard = asyncHandler(async (req, res, next) => {
   }
 });
 
-
-module.exports= {authguard}
+module.exports = { authguard };
