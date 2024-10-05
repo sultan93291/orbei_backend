@@ -21,6 +21,9 @@ const {
 const {
   loginUser,
 } = require("../../Controller/userController/loginUser/loginUser.js");
+const {
+  optMatcher,
+} = require("../../Controller/otpMatcher/otpMatcher.js");
 const { apiSuccess } = require("../../utils/apiSuccess.js");
 const {authguard} = require("../../middleware/authGuard.js")
 
@@ -31,7 +34,9 @@ router.route("/get-api").get((req, res) => {
       new apiSuccess(true, "successfully initialized app", 200, null, false)
     );
 });
+
 router.route("/create-user").post(CreateUser);
-router.route("/login-user").post( authguard ,  loginUser);
+router.route("/login-user").post(authguard, loginUser);
+router.route("/verify-otp").post(authguard, optMatcher);
 
 module.exports = router;

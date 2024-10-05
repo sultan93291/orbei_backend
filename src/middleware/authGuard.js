@@ -17,12 +17,19 @@ const { asyncHandler } = require("../utils/asyncaHandler.js");
 
 const authguard = asyncHandler(async (req, res, next) => {
   try {
+
+    
     const { cookie, authorization } = req.headers;
     const removeBearer = authorization?.split("Bearer")[1];
     const token = removeBearer?.split("@")[1];
-    const cookiesToken = cookie?.split("=")[1];
+    const cookiesToken = cookie
+      ?.split("; ")
+      .find((c) => c.startsWith("access_token="))
+      ?.split("=")[1];
+
+
     if (token) {
-      const decoded = jwt.verify(token, process.env.ACCCESS_TOKEN_SCCRECT);
+      const decoded = jwt.verify(token, process.env.SECRET_KEY);
       if (decoded) {
         next();
       }
@@ -31,7 +38,7 @@ const authguard = asyncHandler(async (req, res, next) => {
       if (decoded) {
         next();
       }
-    }
+    } 
   } catch (error) {
     return next(
       new apiError(500, "Server-side problem: " + error.message, null, false)

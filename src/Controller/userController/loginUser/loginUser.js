@@ -52,30 +52,39 @@ const loginUser = asyncHandler(async (req, res, next) => {
 
     if (!isExistedUser) {
       return next(
-        new apiError(400, "invalid username or password ", null, false)
+        new apiError(400, " Invalid username or password ", null, false)
       );
     }
 
     const isValidPass = await decodePassword(password, isExistedUser?.password);
 
-    // generate access token
-    const token = await generateAccessToken(emailAddress);
-
-    if (isValidPass) {
-      return res
-        .status(200)
-        .cookie("access_token", token, options)
-        .json(
-          new apiSuccess(
-            true,
-            { firstName: isExistedUser?.firstName },
-            200,
-            false
-          )
-        );
-    } else {
+    if (!isValidPass) {
       return next(new apiError(400, "invalid username or password ", false));
     }
+
+    const data = {
+      email: isExistedUser.emailAddress,
+      telephone: isExistedUser.telephone,
+      firstName: isExistedUser.firstName,
+    };
+
+    // generate access token
+    const token = await generateAccessToken(data);
+
+    // saving current access token
+    isExistedUser.refreshToken = token;
+    await isExistedUser.save();
+    return res
+      .status(200)
+      .cookie("access_token", token, options)
+      .json(
+        new apiSuccess(
+          true,
+          { firstName: isExistedUser?.firstName, token: token },
+          200,
+          false
+        )
+      );
   } catch (error) {
     return next(
       new apiError(500, "Server-side problem: " + error.message, null, false)
