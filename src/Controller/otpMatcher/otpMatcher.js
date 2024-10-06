@@ -15,7 +15,7 @@ const { apiError } = require("../../utils/apiError");
 const { apiSuccess } = require("../../utils/apiSuccess");
 const { asyncHandler } = require("../../utils/asyncaHandler");
 
-const optMatcher = asyncHandler(async (req, res, next) => {
+const otpMatcher = asyncHandler(async (req, res, next) => {
   try {
     const { otp, emailAddress } = req.body;
 
@@ -47,4 +47,4 @@ const optMatcher = asyncHandler(async (req, res, next) => {
   }
 });
 
-module.exports = { optMatcher };
+module.exports = { otpMatcher };

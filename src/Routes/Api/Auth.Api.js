@@ -21,22 +21,30 @@ const {
 const {
   loginUser,
 } = require("../../Controller/userController/loginUser/loginUser.js");
-const {
-  optMatcher,
-} = require("../../Controller/otpMatcher/otpMatcher.js");
+const { otpMatcher } = require("../../Controller/otpMatcher/otpMatcher.js");
 const { apiSuccess } = require("../../utils/apiSuccess.js");
-const {authguard} = require("../../middleware/authGuard.js")
+const { authguard } = require("../../middleware/authGuard.js");
+const {
+  forgotPassword,
+} = require("../../Controller/passwordController/ForgotPassword/forgotPassword.js");
 
 router.route("/get-api").get((req, res) => {
   res
     .status(200)
     .json(
-      new apiSuccess(true, "successfully initialized app", 200, null, false)
+      new apiSuccess(
+        true,
+        "successfully initialized production app   ",
+        200,
+        null,
+        false
+      )
     );
 });
 
 router.route("/create-user").post(CreateUser);
 router.route("/login-user").post(authguard, loginUser);
-router.route("/verify-otp").post(authguard, optMatcher);
+router.route("/verify-otp").post(authguard, otpMatcher);
+router.route("/forgot-pass").post(forgotPassword);
 
 module.exports = router;
