@@ -10,6 +10,7 @@
 // External dependencies
 
 // Internal dependencies
+const { hashedPassword } = require("../../../helpers/helper");
 const { otpGenerator } = require("../../../helpers/otpGenerator");
 const { user } = require("../../../Schema/UserSchema");
 const { apiError } = require("../../../utils/apiError");
@@ -23,24 +24,23 @@ const { mailSender } = require("../../../utils/sendMail");
 const resetPassword = asyncHandler(async (req, res, next) => {
   try {
     // extract data from body
-    const { emailAddress, Otp, password, confirmPassword } = req.body;
+    const { emailAddress, Otp, newPassword, confirmPassword } = req.body;
 
     // check is valid email
     if (!emailAddress || !emailChecker(emailAddress)) {
       return next(new apiError(400, "Invalid email address", null, false));
     }
     // check is valid password
-    if (!password || !emailChecker(password)) {
+    if (!newPassword || !passwordChecker(newPassword)) {
       return next(new apiError(400, "Invalid password signature", null, false));
     }
-
     // check is valid confirm password
-    if (!confirmPassword || !emailChecker(confirmPassword)) {
+    if (!confirmPassword || !passwordChecker(confirmPassword)) {
       return next(new apiError(400, "Invalid password signature", null, false));
     }
 
-    // checking is both password and confirm password are same 
-    if (!(password == confirmPassword)) {
+    // checking is both password and confirm password are same
+    if (confirmPassword !== newPassword) {
       return next(new apiError(400, "check your password again", null, false));
     }
 
@@ -51,30 +51,29 @@ const resetPassword = asyncHandler(async (req, res, next) => {
       return next(new apiError(400, "No user registered", null, false));
     }
 
-    const otp = await otpGenerator();
+    // check user inputed otp
 
-    await mailSender({
-      name: isValidUser.firstName,
-      emailAddress,
-      otp,
-    });
+    const DbOtp = isValidUser.otp;
 
-    isValidUser.otp = otp;
+    if (DbOtp != Otp) {
+      return next(new apiError(400, "Otp invalid", null, false));
+    }
+
+    /// if valid user & valid otp then hash the password
+
+
+    console.log(hashedPass);
+
+    isValidUser.password = hashedPass;
+    isValidUser.otp = null;
     await isValidUser.save();
 
     return res
       .status(200)
-      .json(
-        new apiSuccess(
-          true,
-          "Confirm your indentity , please check your email address",
-          200,
-          null
-        )
-      );
+      .json(new apiSuccess(true, "Successfully reset password", 200, null));
   } catch (error) {
     return next(
-      new apiError(400, "server side problem:" + error.message, null, false)
+      new apiError(500, "server side problem:" + error.message, null, false)
     );
   }
 });

@@ -53,7 +53,7 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
       .json(new apiSuccess(true, "Confirm your indentity , please check your email address", 200, null));
   } catch (error) {
     return next(
-      new apiError(400, "server side problem:" + error.message, null, false)
+      new apiError(500, "server side problem:" + error.message, null, false)
     );
   }
 });
