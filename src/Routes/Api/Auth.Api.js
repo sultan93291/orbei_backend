@@ -30,14 +30,13 @@ const {
 const {
   changePassword,
 } = require("../../Controller/passwordController/changePassword/changePassword.js");
-
+const {
+  getAllRegisteredUser,
+} = require("../../Controller/userController/getAllUser/getAllUser.js");
 
 const { otpMatcher } = require("../../Controller/otpMatcher/otpMatcher.js");
 const { apiSuccess } = require("../../utils/apiSuccess.js");
 const { authguard } = require("../../middleware/authGuard.js");
-
-
-
 
 router.route("/get-api").get((req, res) => {
   res
@@ -54,10 +53,11 @@ router.route("/get-api").get((req, res) => {
 });
 
 router.route("/create-user").post(CreateUser);
-router.route("/login-user").post( loginUser);
-router.route("/verify-otp").post( otpMatcher);
+router.route("/login-user").post(loginUser);
+router.route("/verify-otp").post(otpMatcher);
 router.route("/forgot-pass").post(forgotPassword);
 router.route("/reset-pass").post(resetPassword);
-router.route("/change-pass").put(authguard ,changePassword);
+router.route("/change-pass").put(authguard, changePassword);
+router.route("/get-allUsers").get(authguard, getAllRegisteredUser);
 
 module.exports = router;

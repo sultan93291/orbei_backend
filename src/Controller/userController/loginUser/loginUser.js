@@ -14,8 +14,6 @@ const { user } = require("../../../Schema/UserSchema.js");
 const { apiError } = require("../../../utils/apiError.js");
 const { apiSuccess } = require("../../../utils/apiSuccess.js");
 const { asyncHandler } = require("../../../utils/asyncaHandler.js");
-const { mailSender } = require("../../../utils/sendMail.js");
-const { otpGenerator } = require("../../../helpers/otpGenerator.js");
 const { emailChecker, passwordChecker } = require("../../../utils/checker.js");
 
 const {
