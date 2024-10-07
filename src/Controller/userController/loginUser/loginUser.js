@@ -33,13 +33,13 @@ const loginUser = asyncHandler(async (req, res, next) => {
   try {
     const { emailAddress, password } = await req.body;
 
-    if (!emailChecker(emailAddress)) {
+    if ( !emailAddress || !emailChecker(emailAddress)) {
       return next(
         new apiError(400, "Please enter a valid email address", null, false)
       );
     }
 
-    if (!passwordChecker(password)) {
+    if (!password || !passwordChecker(password)) {
       return next(
         new apiError(400, "Please enter a valid password", null, false)
       );
@@ -57,7 +57,7 @@ const loginUser = asyncHandler(async (req, res, next) => {
     const isValidPass = await decodePassword(password, isExistedUser?.password);
 
     if (!isValidPass) {
-      return next(new apiError(400, "invalid username or password ", false));
+      return next(new apiError(400, "Invalid username or password ", false));
     }
 
     const data = {

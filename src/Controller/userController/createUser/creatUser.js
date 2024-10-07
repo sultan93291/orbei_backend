@@ -58,12 +58,12 @@ const CreateUser = asyncHandler(async (req, res, next) => {
     if (!lastName) {
       return next(new apiError(400, "Please enter last name", null, false));
     }
-    if (!emailChecker(emailAddress)) {
+    if (!emailAddress || !emailChecker(emailAddress)) {
       return next(
         new apiError(400, "Please enter a valid email address", null, false)
       );
     }
-    if (!numberChecker(telephone)) {
+    if (!telephone || !numberChecker(telephone)) {
       return next(new apiError(400, "Please enter a valid telephone number"));
     }
     if (!permanentAddress) {
@@ -74,7 +74,7 @@ const CreateUser = asyncHandler(async (req, res, next) => {
     if (!city) {
       return next(new apiError(400, "Please enter your city", null, false));
     }
-    if (!passwordChecker(password)) {
+    if (!password || !passwordChecker(password)) {
       return next(
         new apiError(400, "Please enter a valid password", null, false)
       );
@@ -112,10 +112,9 @@ const CreateUser = asyncHandler(async (req, res, next) => {
       emailAddress,
       telephone,
       userId: savedUser?._id,
-      isVerified:savedUser?.isVerified
+      isVerified: savedUser?.isVerified,
     };
 
-    
     // call the the mail sender fucntion
     const mailInfo = await mailSender({
       name: firstName,
