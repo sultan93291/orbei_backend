@@ -66,6 +66,7 @@ const loginUser = asyncHandler(async (req, res, next) => {
       email: isExistedUser.emailAddress,
       telephone: isExistedUser.telephone,
       firstName: isExistedUser.firstName,
+      userId: isExistedUser?._id,
     };
 
     // generate access token

@@ -36,7 +36,7 @@ const decodePassword = async (password, hashedPassword) => {
 };
 
 // token genearate function
-const generateAccessToken = async(Data) => {
+const generateAccessToken = async (Data) => {
   try {
     const accessToken = await jwt.sign(
       {
@@ -54,4 +54,41 @@ const generateAccessToken = async(Data) => {
   }
 };
 
-module.exports = { generateAccessToken, hashedPassword, decodePassword };
+// decode token function
+
+const decodeToken = async (req) => {
+  try {
+    // Extract headers
+    const { cookie, authorization } = req.headers;
+
+    // Extract token from Authorization header (if available)
+    const removeBearer = authorization?.split("Bearer ")[1];
+    const token = removeBearer?.split("@")[1];
+
+    // Extract token from cookies (if available)
+    const cookiesToken = cookie
+      ?.split("; ")
+      .find((c) => c.startsWith("access_token="))
+      ?.split("=")[1];
+
+    // Decode the token without verification
+    if (token) {
+      const decoded = jwt.verify(token, process.env.SECRET_KEY); // Decode token from Authorization header
+      return decoded;
+    } else if (cookiesToken) {
+      const decoded = jwt.verify(token, process.env.SECRET_KEY); // Decode token from cookies
+      return decoded;
+    } else {
+      return null; // No token provided
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+module.exports = {
+  generateAccessToken,
+  hashedPassword,
+  decodePassword,
+  decodeToken,
+};

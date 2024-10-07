@@ -11,13 +11,12 @@
 
 // Internal dependencies
 const { hashedPassword } = require("../../../helpers/helper");
-const { otpGenerator } = require("../../../helpers/otpGenerator");
 const { user } = require("../../../Schema/UserSchema");
 const { apiError } = require("../../../utils/apiError");
 const { apiSuccess } = require("../../../utils/apiSuccess");
 const { asyncHandler } = require("../../../utils/asyncaHandler");
 const { emailChecker, passwordChecker } = require("../../../utils/checker");
-const { mailSender } = require("../../../utils/sendMail");
+
 
 // reset password mechanism
 
@@ -61,8 +60,8 @@ const resetPassword = asyncHandler(async (req, res, next) => {
 
     /// if valid user & valid otp then hash the password
 
+    const hashedPass = await hashedPassword(newPassword);
 
-    console.log(hashedPass);
 
     isValidUser.password = hashedPass;
     isValidUser.otp = null;
@@ -70,7 +69,7 @@ const resetPassword = asyncHandler(async (req, res, next) => {
 
     return res
       .status(200)
-      .json(new apiSuccess(true, "Successfully reset password", 200, null));
+      .json(new apiSuccess(true, "Successfully reseted password", 200, null));
   } catch (error) {
     return next(
       new apiError(500, "server side problem:" + error.message, null, false)

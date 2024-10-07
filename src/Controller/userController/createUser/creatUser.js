@@ -114,8 +114,10 @@ const CreateUser = asyncHandler(async (req, res, next) => {
       firstName,
       emailAddress,
       telephone,
+      userId: savedUser?._id,
     };
 
+    
     // call the the mail sender fucntion
     const mailInfo = await mailSender({
       name: firstName,
