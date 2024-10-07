@@ -45,10 +45,14 @@ const {
 const {
   verifyResetPassOtp,
 } = require("../../Controller/passwordController/verifyResetOtp/verifyResetOtp.js");
+const {
+  updateUserDetails,
+} = require("../../Controller/userController/updateUserDetails/updateUserDetails.js");
 
 const { apiSuccess } = require("../../utils/apiSuccess.js");
 const { authguard } = require("../../middleware/authGuard.js");
 const { resetAuthGuard } = require("../../middleware/resetAuthGuard.js");
+
 
 router.route("/get-api").get((req, res) => {
   res
@@ -74,5 +78,6 @@ router.route("/get-all-user").get(authguard, getAllRegisteredUser);
 router.route("/change-user-role").put(authguard, changeUserRole);
 router.route("/get-reset-otp").get(getResetPasswordOtp);
 router.route("/verify-reset-otp").put(resetAuthGuard, verifyResetPassOtp);
+router.route("/update-user-details").put(authguard, updateUserDetails);
 
 module.exports = router;

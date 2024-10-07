@@ -48,9 +48,6 @@ const CreateUser = asyncHandler(async (req, res, next) => {
       division,
       district,
       password,
-      otp,
-      role,
-      refreshToken,
       avatar,
     } = req.body;
 
