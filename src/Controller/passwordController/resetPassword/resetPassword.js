@@ -25,10 +25,6 @@ const resetPassword = asyncHandler(async (req, res, next) => {
     // extract data from body
     const { emailAddress, Otp, newPassword, confirmPassword } = req.body;
 
-    // check is valid email
-    if (!emailAddress || !emailChecker(emailAddress)) {
-      return next(new apiError(400, "Invalid email address", null, false));
-    }
     // check is valid password
     if (!newPassword || !passwordChecker(newPassword)) {
       return next(new apiError(400, "Invalid password signature", null, false));
@@ -51,20 +47,18 @@ const resetPassword = asyncHandler(async (req, res, next) => {
     }
 
     // check user inputed otp
-
-    const DbOtp = isValidUser.otp;
+    const DbOtp = isValidUser.resetOtp;
 
     if (DbOtp != Otp) {
       return next(new apiError(400, "Otp invalid", null, false));
     }
 
     /// if valid user & valid otp then hash the password
-
     const hashedPass = await hashedPassword(newPassword);
 
 
     isValidUser.password = hashedPass;
-    isValidUser.otp = null;
+    isValidUser.resetOtp = null;
     await isValidUser.save();
 
     return res

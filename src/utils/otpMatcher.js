@@ -39,9 +39,6 @@ const otpMatcher = async (otp, emailAddress, req, verifyAcc, resetPassword) => {
         .status(200)
         .json(new apiSuccess(true, "otp verified", 200, false));
     }
-    if (verifyAcc) {
-      
-    }
   } catch (error) {
     console.log(error);
 
