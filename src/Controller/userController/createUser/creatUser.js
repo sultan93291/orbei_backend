@@ -115,6 +115,7 @@ const CreateUser = asyncHandler(async (req, res, next) => {
       emailAddress,
       telephone,
       userId: savedUser?._id,
+      isVerified:savedUser?.isVerified
     };
 
     

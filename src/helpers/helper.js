@@ -83,6 +83,7 @@ const decodeToken = async (req) => {
     }
   } catch (error) {
     console.log(error.message);
+    return null
   }
 };
 

@@ -36,12 +36,13 @@ const {
 const {
   changeUserRole,
 } = require("../../Controller/userController/changeUserRole/changeUserRole.js");
+const {
+  verifyUserAccount,
+} = require("../../Controller/userController/verifyUser/verifyUser.js");
 
-const { otpMatcher } = require("../../Controller/otpMatcher/otpMatcher.js");
+const { otpMatcher } = require("../../utils/otpMatcher.js");
 const { apiSuccess } = require("../../utils/apiSuccess.js");
 const { authguard } = require("../../middleware/authGuard.js");
-
-
 
 router.route("/get-api").get((req, res) => {
   res
@@ -59,7 +60,7 @@ router.route("/get-api").get((req, res) => {
 
 router.route("/create-user").post(CreateUser);
 router.route("/login-user").post(loginUser);
-router.route("/verify-otp").post(otpMatcher);
+router.route("/verify-account").put(authguard, verifyUserAccount);
 router.route("/forgot-pass").post(forgotPassword);
 router.route("/reset-pass").post(resetPassword);
 router.route("/change-pass").put(authguard, changePassword);

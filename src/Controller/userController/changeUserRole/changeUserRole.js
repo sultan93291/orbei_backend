@@ -49,8 +49,6 @@ const changeUserRole = asyncHandler(async (req, res, next) => {
 
     // check is valid user
     const isValidUser = await user.findById(data?.Data?.userId);
-    console.log(isValidUser);
-
     if (!isValidUser) {
       return next(new apiError(400, "No user registered", null, false));
     }

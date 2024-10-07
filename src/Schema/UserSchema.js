@@ -14,7 +14,6 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const { model, models } = mongoose;
 
-
 // regex pattern
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phoneRegex = /^(?:\+8801|01)[3-9]\d{8}$/;
@@ -88,6 +87,9 @@ const UserSchema = new Schema(
     otp: {
       type: Number,
     },
+    resetOtp: {
+      type: Number,
+    },
     role: {
       type: String,
       enum: ["admin", "user", "merchant"],
@@ -98,6 +100,10 @@ const UserSchema = new Schema(
     },
     avatar: {
       type: String,
+    },
+    isVerified: {
+      type: Boolean,
+      default:false
     },
   },
   {
