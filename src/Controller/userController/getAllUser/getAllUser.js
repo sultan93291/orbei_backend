@@ -1,7 +1,7 @@
 /*
  * author: Md. Abib Ahmed Dipto
  * date: 07-10-2024
- * description: This file is the get all user file . this file gonna return all current user.
+ * description: This file is gonna  get all user file . this file gonna return all current user.
  * copyright: abib.web.dev@gmail.com
  */
 
@@ -31,7 +31,6 @@ const getAllRegisteredUser = asyncHandler(async (req, res, next) => {
         true,
         {
           allusers: allUsers,
-          
         },
         200,
         false

@@ -33,10 +33,15 @@ const {
 const {
   getAllRegisteredUser,
 } = require("../../Controller/userController/getAllUser/getAllUser.js");
+const {
+  changeUserRole,
+} = require("../../Controller/userController/changeUserRole/changeUserRole.js");
 
 const { otpMatcher } = require("../../Controller/otpMatcher/otpMatcher.js");
 const { apiSuccess } = require("../../utils/apiSuccess.js");
 const { authguard } = require("../../middleware/authGuard.js");
+
+
 
 router.route("/get-api").get((req, res) => {
   res
@@ -58,6 +63,7 @@ router.route("/verify-otp").post(otpMatcher);
 router.route("/forgot-pass").post(forgotPassword);
 router.route("/reset-pass").post(resetPassword);
 router.route("/change-pass").put(authguard, changePassword);
-router.route("/get-allUsers").get(authguard, getAllRegisteredUser);
+router.route("/get-all-user").get(authguard, getAllRegisteredUser);
+router.route("/change-user-role").get(authguard, changeUserRole);
 
 module.exports = router;
