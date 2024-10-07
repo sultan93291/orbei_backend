@@ -10,6 +10,7 @@
 // External dependencies
 
 // Internal dependencies
+const { generateAccessToken } = require("../../../helpers/helper");
 const { otpGenerator } = require("../../../helpers/otpGenerator");
 const { user } = require("../../../Schema/UserSchema");
 const { apiError } = require("../../../utils/apiError");
@@ -17,6 +18,11 @@ const { apiSuccess } = require("../../../utils/apiSuccess");
 const { asyncHandler } = require("../../../utils/asyncaHandler");
 const { emailChecker } = require("../../../utils/checker");
 const { mailSender } = require("../../../utils/sendMail");
+
+const options = {
+  httpOnly: true,
+  secure: true,
+};
 
 // get reset  password otp   mechanism
 const getResetPasswordOtp = asyncHandler(async (req, res, next) => {
@@ -50,12 +56,26 @@ const getResetPasswordOtp = asyncHandler(async (req, res, next) => {
       otp: otp,
     });
 
+    // generate data for generating token
+    const data = {
+      emailAddress,
+      isReset: true,
+    };
+
+    // generate access token
+
+    const token = await generateAccessToken(data);
+
     return res
       .status(200)
+      .cookie("reset_token", token, options)
       .json(
         new apiSuccess(
           true,
-          " Reset OTP sent to you. Please check your email address. ",
+          {
+            // " Reset OTP sent to you. Please check your email address. "
+            token,
+          },
           null,
           false
         )
@@ -67,5 +87,4 @@ const getResetPasswordOtp = asyncHandler(async (req, res, next) => {
   }
 });
 
-
-module.exports = {getResetPasswordOtp}
+module.exports = { getResetPasswordOtp };

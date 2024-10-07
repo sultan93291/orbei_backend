@@ -42,12 +42,13 @@ const {
 const {
   getResetPasswordOtp,
 } = require("../../Controller/passwordController/getResetPassOtp/getResetPassOtp.js");
+const {
+  verifyResetPassOtp,
+} = require("../../Controller/passwordController/verifyResetOtp/verifyResetOtp.js");
 
-
-const { otpMatcher } = require("../../utils/otpMatcher.js");
 const { apiSuccess } = require("../../utils/apiSuccess.js");
 const { authguard } = require("../../middleware/authGuard.js");
-
+const { resetAuthGuard } = require("../../middleware/resetAuthGuard.js");
 
 router.route("/get-api").get((req, res) => {
   res
@@ -67,11 +68,11 @@ router.route("/create-user").post(CreateUser);
 router.route("/login-user").post(loginUser);
 router.route("/verify-account").put(authguard, verifyUserAccount);
 router.route("/forgot-pass").post(forgotPassword);
-router.route("/reset-pass").post(resetPassword);
+router.route("/reset-pass").post(resetAuthGuard, resetPassword);
 router.route("/change-pass").put(authguard, changePassword);
 router.route("/get-all-user").get(authguard, getAllRegisteredUser);
 router.route("/change-user-role").put(authguard, changeUserRole);
-router.route("/change-user-role").get(authguard, changeUserRole);
-router.route("/get-reset-otp").get( getResetPasswordOtp );
+router.route("/get-reset-otp").get(getResetPasswordOtp);
+router.route("/verify-reset-otp").put(resetAuthGuard, verifyResetPassOtp);
 
 module.exports = router;

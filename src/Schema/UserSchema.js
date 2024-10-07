@@ -105,6 +105,9 @@ const UserSchema = new Schema(
       type: Boolean,
       default:false
     },
+    isValidatedResetAuth: {
+      type: Boolean,
+    }
   },
   {
     timestamps: true,

@@ -10,20 +10,20 @@
 // External dependencies
 
 // Internal dependencies
-const { hashedPassword } = require("../../../helpers/helper");
+const { decode } = require("jsonwebtoken");
+const { hashedPassword, decodeToken } = require("../../../helpers/helper");
 const { user } = require("../../../Schema/UserSchema");
 const { apiError } = require("../../../utils/apiError");
 const { apiSuccess } = require("../../../utils/apiSuccess");
 const { asyncHandler } = require("../../../utils/asyncaHandler");
 const { emailChecker, passwordChecker } = require("../../../utils/checker");
 
-
 // reset password mechanism
 
 const resetPassword = asyncHandler(async (req, res, next) => {
   try {
     // extract data from body
-    const { emailAddress, Otp, newPassword, confirmPassword } = req.body;
+    const { newPassword, confirmPassword } = req.body;
 
     // check is valid password
     if (!newPassword || !passwordChecker(newPassword)) {
@@ -39,30 +39,39 @@ const resetPassword = asyncHandler(async (req, res, next) => {
       return next(new apiError(400, "check your password again", null, false));
     }
 
+    // decode token
+
+    const decodedToken = await decodeToken(req);
+
+    console.log();
+
     // check is valid user
-    const isValidUser = await user.findOne({ emailAddress: emailAddress });
+    const isValidUser = await user.findOne({
+      emailAddress: decodedToken?.Data?.emailAddress,
+    });
 
     if (!isValidUser) {
       return next(new apiError(400, "No user registered", null, false));
     }
 
-    // check user inputed otp
-    const DbOtp = isValidUser.resetOtp;
-
-    if (DbOtp != Otp) {
-      return next(new apiError(400, "Otp invalid", null, false));
+    // is reset auth verified
+    if (
+      !isValidUser?.isValidatedResetAuth &&
+      !decodedToken?.Data?.isValidatedResetAuth
+    ) {
+      return next(new apiError(400, " Reset auth invalid", null, false));
     }
 
-    /// if valid user & valid otp then hash the password
+    /// if valid user & valid reset auth
     const hashedPass = await hashedPassword(newPassword);
 
-
     isValidUser.password = hashedPass;
-    isValidUser.resetOtp = null;
+    isValidUser.isValidatedResetAuth = null;
     await isValidUser.save();
 
     return res
       .status(200)
+      .clearCookie("reset_token")
       .json(new apiSuccess(true, "Successfully reseted password", 200, null));
   } catch (error) {
     return next(
