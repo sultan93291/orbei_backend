@@ -105,7 +105,7 @@ const CreateUser = asyncHandler(async (req, res, next) => {
     const savedUser = await newUser.save();
     // generate otp
     const Otp = await otpGenerator();
-    console.log(Otp);
+
 
     const data = {
       firstName,

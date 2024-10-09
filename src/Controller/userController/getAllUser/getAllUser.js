@@ -23,7 +23,7 @@ const getAllRegisteredUser = asyncHandler(async (req, res, next) => {
     const allUsers = await user.find({}).select("-password -otp -refreshToken");
 
     if (!(allUsers.length > 0)) {
-      return next(new apiError(500, "Sorry  no  registered user ", false));
+      return next(new apiError(500, "Sorry no registered user ", false));
     }
 
     return res.status(200).json(

@@ -16,10 +16,12 @@ const router = Router();
 
 // internal dependencies
 const authRoutes = require("./Api/Auth.Api.js");
+const passwordRoutes = require("./Api/Auth.Api.js");
 const { apiError } = require("../utils/apiError.js");
 
 // initialization of routes if valid routes then it's gonna porced to the routes . or else it's gonna send an error invlaid or not found routes
 router.use(process.env.VERSION_NAME, authRoutes);
+router.use(process.env.VERSION_NAME, passwordRoutes);
 router.use(process.env.VERSION_NAME, (req, res) => {
   res
     .status(404)

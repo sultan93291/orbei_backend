@@ -13,7 +13,6 @@ const chalk = require("chalk");
 require("dotenv").config();
 
 // internal dependencies
-const { ConnectDb } = require("./src/ConnectDb/ConnetDb.js");
 const allRoutes = require("./src/Routes/index.js");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
@@ -25,14 +24,11 @@ const port = process.env.PORT;
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors())
-app.use(cookieParser())
+app.use(cors());
+app.use(cookieParser());
 
 // passing all routes to the main app
 app.use(allRoutes);
-
-// calling database
-ConnectDb();
 
 // main error handler function
 app.use((err, req, res, next) => {
