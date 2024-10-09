@@ -44,6 +44,8 @@ app.use((err, req, res, next) => {
 //  configuration of port
 app.listen(process.env.PORT || 3000, () => {
   console.log(
-    chalk.bgBlueBright(`listening on port http://localhost:${port || 3000}`)
+    chalk.bgBlueBright(
+      `listening on port http://localhost:${port || 3000}${process.env.VERSION_NAME}`
+    )
   );
 });

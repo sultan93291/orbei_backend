@@ -60,13 +60,13 @@ const { authguard } = require("../../middleware/authGuard.js");
 const { resetAuthGuard } = require("../../middleware/resetAuthGuard.js");
 
 // Base route
-router.route("/get-api").get((req, res) => {
+router.route("/get-user-api").get((req, res) => {
   res
     .status(200)
     .json(
       new apiSuccess(
         true,
-        "Successfully initialized production app   ",
+        "Successfully initialized user routes   ",
         200,
         null,
         false

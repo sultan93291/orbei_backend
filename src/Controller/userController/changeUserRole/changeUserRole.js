@@ -61,6 +61,16 @@ const changeUserRole = asyncHandler(async (req, res, next) => {
       );
     }
 
+    if (!isValidUser?.isVerified) {
+      return next(
+        new apiError(
+          400,
+          `To become a ${role} , you've to verify your account  `,
+          null,
+          false
+        )
+      );
+    }
     isValidUser.role = role;
     await isValidUser.save();
 

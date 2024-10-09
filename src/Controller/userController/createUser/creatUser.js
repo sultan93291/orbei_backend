@@ -113,6 +113,7 @@ const CreateUser = asyncHandler(async (req, res, next) => {
       telephone,
       userId: savedUser?._id,
       isVerified: savedUser?.isVerified,
+      userRole : savedUser?.role
     };
 
     // call the the mail sender fucntion

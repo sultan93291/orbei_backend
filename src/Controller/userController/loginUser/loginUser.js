@@ -33,7 +33,7 @@ const loginUser = asyncHandler(async (req, res, next) => {
   try {
     const { emailAddress, password } = await req.body;
 
-    if ( !emailAddress || !emailChecker(emailAddress)) {
+    if (!emailAddress || !emailChecker(emailAddress)) {
       return next(
         new apiError(400, "Please enter a valid email address", null, false)
       );
@@ -66,6 +66,7 @@ const loginUser = asyncHandler(async (req, res, next) => {
       firstName: isExistedUser.firstName,
       userId: isExistedUser?._id,
       isVerified: isExistedUser?.isVerified,
+      userRole: isExistedUser?.role,
     };
 
     // generate access token

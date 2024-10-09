@@ -1,7 +1,7 @@
 {
   /*
    * author: Md. Abib Ahmed Dipto
-   * date: 28-08-2024
+   * date: 09-10-2024
    * description: This is the route handler file for handling all password-related routes. It forwards route requests to corresponding controller functions.
    * copyright: abib.web.dev@gmail.com
    */
@@ -41,20 +41,19 @@ const { authguard } = require("../../middleware/authGuard.js");
 const { resetAuthGuard } = require("../../middleware/resetAuthGuard.js");
 
 // Base route
-router.route("/get-pass-demo").get((req, res) => {
+router.route("/get-pass-api").get((req, res) => {
   res
     .status(200)
     .json(
       new apiSuccess(
         true,
-        "Successfully initialized production app pass route working   ",
+        "Successfully initialized password routes   ",
         200,
         null,
         false
       )
     );
 });
-
 // All user routes
 
 // All POST routes
