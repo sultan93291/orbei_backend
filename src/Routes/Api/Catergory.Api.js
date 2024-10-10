@@ -17,11 +17,29 @@ const router = Router();
 //Internal dependencies
 
 // All  controllers
-const {
-  createCategory,
-} = require("../../Controller/categoryController/crateCategoryController");
 const { authguard } = require("../../middleware/authGuard");
+const { createCategory } = require("../../Controller/categoryController/createCategoryController/crateCategoryController");
+const { apiSuccess } = require("../../utils/apiSuccess");
+const { getAllRegisteredCategory } = require("../../Controller/categoryController/getAllCategory/getAllCategory");
+
+
+
+// Base route
+router.route("/get-category-api").get((req, res) => {
+  res
+    .status(200)
+    .json(
+      new apiSuccess(
+        true,
+        "Successfully initialized category routes   ",
+        200,
+        null,
+        false
+      )
+    );
+});
 
 router.route("/create-category").post(authguard, createCategory);
+router.route("/get-all-category").get(authguard, getAllRegisteredCategory);
 
 module.exports = router;

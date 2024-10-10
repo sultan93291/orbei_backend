@@ -1,7 +1,7 @@
 /*
  * author: Md. Abib Ahmed Dipto
  * date: 07-10-2024
- * description: This file is gonna  get all user from db . this file gonna return all current user.
+ * description: This file is gonna  get all category from db . this file gonna return all current user.
  * copyright: abib.web.dev@gmail.com
  */
 
@@ -10,27 +10,27 @@
 // External dependencies
 
 // Internal dependencies
-const { user } = require("../../../Schema/UserSchema.js");
+const { CategoryModel } = require("../../../Schema/CategorySchema.js");
 const { apiError } = require("../../../utils/apiError.js");
 const { apiSuccess } = require("../../../utils/apiSuccess.js");
 const { asyncHandler } = require("../../../utils/asyncaHandler.js");
 
 // get all registered user mechanisms
 
-const getAllRegisteredUser = asyncHandler(async (req, res, next) => {
+const getAllRegisteredCategory = asyncHandler(async (req, res, next) => {
   try {
-    // get all registered user
-    const allUsers = await user.find({}).select("-password -otp -refreshToken");
+    // get all registered category
+    const allCategory = await CategoryModel.find({}).select("-password -otp -refreshToken");
 
-    if (!(allUsers.length > 0)) {
-      return next(new apiError(500, "Sorry no registered user ", false));
+    if (!(allCategory.length > 0)) {
+      return next(new apiError(500, "Sorry no registered category ", false));
     }
 
     return res.status(200).json(
       new apiSuccess(
         true,
         {
-          allusers: allUsers,
+          allCategory: allCategory,
         },
         200,
         false
@@ -43,4 +43,4 @@ const getAllRegisteredUser = asyncHandler(async (req, res, next) => {
   }
 });
 
-module.exports = { getAllRegisteredUser };
+module.exports = { getAllRegisteredCategory };

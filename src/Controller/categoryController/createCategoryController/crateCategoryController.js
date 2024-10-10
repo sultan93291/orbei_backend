@@ -10,11 +10,11 @@
 // External dependencies
 
 // Internal dependencies
-const { decodeToken } = require("../../helpers/helper");
-const { CategoryModel } = require("../../Schema/CategorySchema");
-const { apiError } = require("../../utils/apiError");
-const { apiSuccess } = require("../../utils/apiSuccess");
-const { asyncHandler } = require("../../utils/asyncaHandler");
+const { decodeToken } = require("../../../helpers/helper");
+const { CategoryModel } = require("../../../Schema/CategorySchema");
+const { apiError } = require("../../../utils/apiError");
+const { apiSuccess } = require("../../../utils/apiSuccess");
+const { asyncHandler } = require("../../../utils/asyncaHandler");
 
 // create category mechanism
 
