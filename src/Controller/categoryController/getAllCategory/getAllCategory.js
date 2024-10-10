@@ -20,7 +20,7 @@ const { asyncHandler } = require("../../../utils/asyncaHandler.js");
 const getAllRegisteredCategory = asyncHandler(async (req, res, next) => {
   try {
     // get all registered category
-    const allCategory = await CategoryModel.find({}).select("-password -otp -refreshToken");
+    const allCategory = await CategoryModel.find({})
 
     if (!(allCategory.length > 0)) {
       return next(new apiError(500, "Sorry no registered category ", false));

@@ -21,6 +21,7 @@ const { authguard } = require("../../middleware/authGuard");
 const { createCategory } = require("../../Controller/categoryController/createCategoryController/crateCategoryController");
 const { apiSuccess } = require("../../utils/apiSuccess");
 const { getAllRegisteredCategory } = require("../../Controller/categoryController/getAllCategory/getAllCategory");
+const { getSingleRegisteredCategory } = require("../../Controller/categoryController/getSingleCategory/getSingleCategory");
 
 
 
@@ -41,5 +42,7 @@ router.route("/get-category-api").get((req, res) => {
 
 router.route("/create-category").post(authguard, createCategory);
 router.route("/get-all-category").get(authguard, getAllRegisteredCategory);
+router.route("/get-single-category").get(authguard, getSingleRegisteredCategory);
+
 
 module.exports = router;
