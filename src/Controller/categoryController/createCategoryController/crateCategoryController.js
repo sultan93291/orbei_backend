@@ -28,10 +28,6 @@ const createCategory = asyncHandler(async (req, res, next) => {
       return next(new apiError(400, "descreption is required", null, false));
     }
 
-    const DecodedData = await decodeToken(req);
-    // checking is user existed
-    
-    isAdmin = DecodedData?.Data?.userRole == "admin";
 
 
     const isExistedCategory = await CategoryModel.find({ title });

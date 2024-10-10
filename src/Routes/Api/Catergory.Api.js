@@ -17,13 +17,22 @@ const router = Router();
 //Internal dependencies
 
 // All  controllers
-const { authguard } = require("../../middleware/authGuard");
-const { createCategory } = require("../../Controller/categoryController/createCategoryController/crateCategoryController");
+const {
+  getAllRegisteredCategory,
+} = require("../../Controller/categoryController/getAllCategory/getAllCategory");
+const {
+  getSingleRegisteredCategory,
+} = require("../../Controller/categoryController/getSingleCategory/getSingleCategory");
+const {
+  createCategory,
+} = require("../../Controller/categoryController/createCategoryController/crateCategoryController");
+const {
+  updateCategory,
+} = require("../../Controller/categoryController/updateCategory/updateCategory");
+
+// Helper files
 const { apiSuccess } = require("../../utils/apiSuccess");
-const { getAllRegisteredCategory } = require("../../Controller/categoryController/getAllCategory/getAllCategory");
-const { getSingleRegisteredCategory } = require("../../Controller/categoryController/getSingleCategory/getSingleCategory");
-
-
+const { authguard } = require("../../middleware/authGuard");
 
 // Base route
 router.route("/get-category-api").get((req, res) => {
@@ -40,9 +49,20 @@ router.route("/get-category-api").get((req, res) => {
     );
 });
 
-router.route("/create-category").post(authguard, createCategory);
-router.route("/get-all-category").get(authguard, getAllRegisteredCategory);
-router.route("/get-single-category").get(authguard, getSingleRegisteredCategory);
+// All Category routes
 
+// All POST routes
+router.route("/create-category").post(authguard, createCategory);
+
+// All PUT routes
+router.route("/update-category/:title").put(authguard, updateCategory);
+
+// All GET routes
+router.route("/get-all-category").get(authguard, getAllRegisteredCategory);
+router
+  .route("/get-single-category/:title")
+  .get(authguard, getSingleRegisteredCategory);
+
+// All DELETE routes
 
 module.exports = router;

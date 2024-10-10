@@ -1,7 +1,7 @@
 /*
  * author: Md. Abib Ahmed Dipto
  * date: 07-10-2024
- * description: This file is gonna  get all category from db . this file gonna return all current user.
+ * description: This file is gonna  get signle category from db . this file gonna query is that category is exist or not if exit then it's gonna return to the user.
  * copyright: abib.web.dev@gmail.com
  */
 
@@ -19,9 +19,8 @@ const { asyncHandler } = require("../../../utils/asyncaHandler.js");
 
 const getSingleRegisteredCategory = asyncHandler(async (req, res, next) => {
   try {
-    // get data from body
-
-    const { title } = req.body;
+    // get data from params
+    const { title } = req.params;
 
     if (!title) {
       return next(new apiError(400, "Please provide a title", null, false));
