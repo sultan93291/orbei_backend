@@ -29,10 +29,15 @@ const {
 const {
   updateCategory,
 } = require("../../Controller/categoryController/updateCategory/updateCategory");
+const {
+  deleteCategory,
+} = require("../../Controller/categoryController/deleteCategoryController/deleteCategory");
 
 // Helper files
 const { apiSuccess } = require("../../utils/apiSuccess");
 const { authguard } = require("../../middleware/authGuard");
+
+
 
 // Base route
 router.route("/get-category-api").get((req, res) => {
@@ -64,5 +69,6 @@ router
   .get(authguard, getSingleRegisteredCategory);
 
 // All DELETE routes
+router.route("/delete-category/:title").delete(authguard, deleteCategory);
 
 module.exports = router;
