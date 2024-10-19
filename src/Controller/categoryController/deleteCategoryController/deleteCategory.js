@@ -10,6 +10,7 @@
 // External dependencies
 
 // Internal dependencies
+const { decodeToken } = require("../../../helpers/helper.js");
 const { CategoryModel } = require("../../../Schema/CategorySchema.js");
 const { apiError } = require("../../../utils/apiError.js");
 const { apiSuccess } = require("../../../utils/apiSuccess.js");
@@ -26,6 +27,16 @@ const deleteCategory = asyncHandler(async (req, res, next) => {
       return next(new apiError(400, "Please provide a title", null, false));
     }
 
+    /// get data from cookies
+    const DecodedData = await decodeToken(req);
+
+    // checking is user existed
+    const isAuthor = DecodedData?.Data?.userRole == "admin";
+
+    if (!isAuthor) {
+      return next(new apiError(401, " Unauthorize opperation ", false));
+    }
+
     // get single registered category
     const requiredCategory = await CategoryModel.findOne({
       title: title,
@@ -33,7 +44,7 @@ const deleteCategory = asyncHandler(async (req, res, next) => {
 
     if (!requiredCategory) {
       return next(
-        new apiError(500, "Sorry requsted category not registered ", false)
+        new apiError(500, "Sorry requsted category not registered ",null, false)
       );
     }
 
@@ -52,14 +63,9 @@ const deleteCategory = asyncHandler(async (req, res, next) => {
       );
     }
 
-    return res.status(200).json(
-      new apiSuccess(
-        true,
-        "Successfully deleted category",
-        200,
-        false
-      )
-    );
+    return res
+      .status(200)
+      .json(new apiSuccess(true, "Successfully deleted category", 200, false));
   } catch (error) {
     return next(
       new apiError(500, "Server side problem " + error.message, false)

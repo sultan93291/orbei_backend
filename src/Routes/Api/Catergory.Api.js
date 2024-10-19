@@ -32,6 +32,9 @@ const {
 const {
   deleteCategory,
 } = require("../../Controller/categoryController/deleteCategoryController/deleteCategory");
+const {
+  approveCategoryController,
+} = require("../../Controller/categoryController/approveCategoryController/approveCategoryController");
 
 // Helper files
 const { apiSuccess } = require("../../utils/apiSuccess");
@@ -61,6 +64,7 @@ router.route("/create-category").post(authguard, createCategory);
 
 // All PUT routes
 router.route("/update-category/:title").put(authguard, updateCategory);
+router.route("/approve-category/:id").put(authguard, approveCategoryController);
 
 // All GET routes
 router.route("/get-all-category").get(authguard, getAllRegisteredCategory);

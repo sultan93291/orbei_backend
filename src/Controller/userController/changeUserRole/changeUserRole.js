@@ -10,29 +10,31 @@
 // External dependencies
 
 // Internal dependencies
-const { decodeToken } = require("../../../helpers/helper.js");
+const {
+  decodeToken,
+  generateAccessToken,
+} = require("../../../helpers/helper.js");
 const { user } = require("../../../Schema/UserSchema.js");
 const { apiError } = require("../../../utils/apiError.js");
 const { apiSuccess } = require("../../../utils/apiSuccess.js");
 const { asyncHandler } = require("../../../utils/asyncaHandler.js");
 
-// change user role mechanism
+const options = {
+  httpOnly: true,
+  secure: true,
+};
 
+// change user role mechanism
 const changeUserRole = asyncHandler(async (req, res, next) => {
   try {
-    // extract data from body
-    const { role } = await req.body;
+    // Extract data from body (no need for await here)
+    const { role } = req.body;
 
-    // all user roles
-
+    // All user roles
     const allUserRoles = ["user", "merchant", "admin"];
 
-    if (!role) {
-      return next(new apiError(400, "Please select a role", null, false));
-    }
-
-    // Check if the role is valid
-    if (!allUserRoles.includes(role)) {
+    // Check if the role is provided and valid
+    if (!role || !allUserRoles.includes(role)) {
       return next(
         new apiError(
           400,
@@ -43,52 +45,69 @@ const changeUserRole = asyncHandler(async (req, res, next) => {
       );
     }
 
-    // decode token data
-
+    // Decode token data
     const data = await decodeToken(req);
 
-    // check is valid user
+    // Check if the user is valid
     const isValidUser = await user.findById(data?.Data?.userId);
     if (!isValidUser) {
       return next(new apiError(400, "No user registered", null, false));
     }
 
-    // change user role
-
+    // Check if the role is already assigned
     if (isValidUser.role === role) {
-      return next(
-        new apiError(400, ` you are already a ${role} `, null, false)
-      );
+      return next(new apiError(400, `You are already a ${role}.`, null, false));
     }
 
+    // Verify the account before role change
     if (!isValidUser?.isVerified) {
       return next(
         new apiError(
           400,
-          `To become a ${role} , you've to verify your account  `,
+          `To become a ${role}, you need to verify your account.`,
           null,
           false
         )
       );
     }
+
+    // Change the user role
     isValidUser.role = role;
     await isValidUser.save();
 
+    // Prepare token data with the updated role
+    const tokenData = {
+      email: isValidUser.emailAddress,
+      telephone: isValidUser.telephone,
+      firstName: isValidUser.firstName,
+      userId: isValidUser?._id,
+      isVerified: isValidUser?.isVerified,
+      userRole: isValidUser?.role,
+    };
+
+    // Generate access token
+    const token = await generateAccessToken(tokenData);
+
+    // Save the new token in the database
+    isValidUser.refreshToken = token;
+    await isValidUser.save();
+
+    // Return success response with the new token
     return res
       .status(200)
+      .cookie("access_token", token, options)
       .json(
         new apiSuccess(
           true,
-          ` Successfully changed role . congartulations you're  now a ${role} `,
+          `Successfully changed role. Congratulations, you're now a ${role}.`,
           200,
           false
         )
       );
   } catch (error) {
     return next(
-      new apiError(500, " server side problem : " + error.message, null, false)
+      new apiError(500, `Server side problem: ${error.message}`, null, false)
     );
   }
 });
-
 module.exports = { changeUserRole };

@@ -28,7 +28,17 @@ const createCategory = asyncHandler(async (req, res, next) => {
       return next(new apiError(400, "descreption is required", null, false));
     }
 
+    /// get data from cookies
+    const DecodedData = await decodeToken(req);
 
+    // validating author
+    const isAuthor =
+      DecodedData?.Data?.userRole == "admin" ||
+      DecodedData?.Data?.userRole == "merchant";
+
+    if (!isAuthor) {
+      return next(new apiError(401, " Unauthorize opperation ", false));
+    }
 
     const isExistedCategory = await CategoryModel.find({ title });
 

@@ -17,6 +17,7 @@ const allRoutes = require("./src/Routes/index.js");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 
+
 // initializing port
 const port = process.env.PORT;
 
@@ -40,6 +41,7 @@ app.use((err, req, res, next) => {
     data: err.data || null,
   });
 });
+
 
 //  configuration of port
 app.listen(process.env.PORT || 3000, () => {
