@@ -19,76 +19,64 @@ const { asyncHandler } = require("../../../utils/asyncaHandler.js");
 // get all registered user mechanisms
 
 const updateCategory = asyncHandler(async (req, res, next) => {
-  try {
-    // get data from params
-    const { title } = req.params;
+  // get data from params
+  const { title } = req.params;
 
-    if (!title) {
-      return next(new apiError(400, "Please provide a title", null, false));
-    }
-    // get data from body
-    const { upDatedTitlte, description } = req.body;
+  if (!title) {
+    return next(new apiError(400, "Please provide a title", null, false));
+  }
+  // get data from body
+  const { upDatedTitlte, description } = req.body;
 
-    if (!upDatedTitlte) {
-      return next(new apiError(400, "Please provide a title", null, false));
-    }
+  if (!upDatedTitlte) {
+    return next(new apiError(400, "Please provide a title", null, false));
+  }
 
-    // get single registered category
-    const requiredCategory = await CategoryModel.findOne({
-      title: title,
-    });
+  // get single registered category
+  const requiredCategory = await CategoryModel.findOne({
+    title: title,
+  });
 
-    if (!requiredCategory) {
-      return next(
-        new apiError(
-          500,
-          "Sorry required category not registered ",
-          null,
-          false
-        )
-      );
-    }
-
-    /// get data from cookies
-    const DecodedData = await decodeToken(req);
-
-    // checking is user existed
-    const isAuthor =
-      DecodedData?.Data?.userRole == "admin" ||
-      DecodedData?.Data?.userRole == "merchant";
-
-    if (!isAuthor) {
-      return next(new apiError(401, " Unauthorize opperation ", false));
-    }
-
-    // updated category
-    const updatedData = {
-      title: upDatedTitlte ?? requiredCategory.tittle,
-      description: description ?? requiredCategory.description,
-    };
-
-
-    const updatedCategory = await CategoryModel.findOneAndUpdate(
-      { title: title },
-      { ...updatedData },
-      { new: true }
-    );
-
-    return res.status(200).json(
-      new apiSuccess(
-        true,
-        {
-          updatedCategory: updatedCategory,
-        },
-        200,
-        false
-      )
-    );
-  } catch (error) {
+  if (!requiredCategory) {
     return next(
-      new apiError(500, "Server side problem " + error.message, false)
+      new apiError(500, "Sorry required category not registered ", null, false)
     );
   }
+
+  /// get data from cookies
+  const DecodedData = await decodeToken(req);
+
+  // checking is user existed
+  const isAuthor =
+    DecodedData?.Data?.userRole == "admin" ||
+    DecodedData?.Data?.userRole == "merchant";
+
+  if (!isAuthor) {
+    return next(new apiError(401, " Unauthorize opperation ", false));
+  }
+
+  // updated category
+  const updatedData = {
+    title: upDatedTitlte ?? requiredCategory.tittle,
+    description: description ?? requiredCategory.description,
+  };
+
+  const updatedCategory = await CategoryModel.findOneAndUpdate(
+    { title: title },
+    { ...updatedData },
+    { new: true }
+  );
+
+  return res.status(200).json(
+    new apiSuccess(
+      true,
+      {
+        updatedCategory: updatedCategory,
+      },
+      200,
+      false
+    )
+  );
 });
 
 module.exports = { updateCategory };

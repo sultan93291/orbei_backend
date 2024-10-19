@@ -21,7 +21,7 @@ const { emailChecker, passwordChecker } = require("../../../utils/checker");
 // reset password mechanism
 
 const resetPassword = asyncHandler(async (req, res, next) => {
-  try {
+
     // extract data from body
     const { newPassword, confirmPassword } = req.body;
 
@@ -40,10 +40,7 @@ const resetPassword = asyncHandler(async (req, res, next) => {
     }
 
     // decode token
-
     const decodedToken = await decodeToken(req);
-
-    console.log();
 
     // check is valid user
     const isValidUser = await user.findOne({
@@ -73,11 +70,6 @@ const resetPassword = asyncHandler(async (req, res, next) => {
       .status(200)
       .clearCookie("reset_token")
       .json(new apiSuccess(true, "Successfully reseted password", 200, null));
-  } catch (error) {
-    return next(
-      new apiError(500, "server side problem:" + error.message, null, false)
-    );
-  }
 });
 
 module.exports = { resetPassword };

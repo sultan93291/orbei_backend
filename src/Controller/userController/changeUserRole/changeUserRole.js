@@ -26,7 +26,6 @@ const options = {
 
 // change user role mechanism
 const changeUserRole = asyncHandler(async (req, res, next) => {
-  try {
     // Extract data from body (no need for await here)
     const { role } = req.body;
 
@@ -104,10 +103,5 @@ const changeUserRole = asyncHandler(async (req, res, next) => {
           false
         )
       );
-  } catch (error) {
-    return next(
-      new apiError(500, `Server side problem: ${error.message}`, null, false)
-    );
-  }
 });
 module.exports = { changeUserRole };

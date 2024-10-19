@@ -18,7 +18,6 @@ const { asyncHandler } = require("../../../utils/asyncaHandler.js");
 // get all registered user mechanisms
 
 const getAllRegisteredUser = asyncHandler(async (req, res, next) => {
-  try {
     // get all registered user
     const allUsers = await user.find({}).select("-password -otp -refreshToken");
 
@@ -36,11 +35,6 @@ const getAllRegisteredUser = asyncHandler(async (req, res, next) => {
         false
       )
     );
-  } catch (error) {
-    return next(
-      new apiError(500, "Server side problem " + error.message, false)
-    );
-  }
 });
 
 module.exports = { getAllRegisteredUser };

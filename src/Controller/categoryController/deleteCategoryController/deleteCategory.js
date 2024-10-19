@@ -19,58 +19,52 @@ const { asyncHandler } = require("../../../utils/asyncaHandler.js");
 // get all registered user mechanisms
 
 const deleteCategory = asyncHandler(async (req, res, next) => {
-  try {
-    // get data from params
-    const { title } = req.params;
+  // get data from params
+  const { title } = req.params;
 
-    if (!title) {
-      return next(new apiError(400, "Please provide a title", null, false));
-    }
+  if (!title) {
+    return next(new apiError(400, "Please provide a title", null, false));
+  }
 
-    /// get data from cookies
-    const DecodedData = await decodeToken(req);
+  /// get data from cookies
+  const DecodedData = await decodeToken(req);
 
-    // checking is user existed
-    const isAuthor = DecodedData?.Data?.userRole == "admin";
+  // checking is user existed
+  const isAuthor = DecodedData?.Data?.userRole == "admin";
 
-    if (!isAuthor) {
-      return next(new apiError(401, " Unauthorize opperation ", false));
-    }
+  if (!isAuthor) {
+    return next(new apiError(401, " Unauthorize opperation ", false));
+  }
 
-    // get single registered category
-    const requiredCategory = await CategoryModel.findOne({
-      title: title,
-    });
+  // get single registered category
+  const requiredCategory = await CategoryModel.findOne({
+    title: title,
+  });
 
-    if (!requiredCategory) {
-      return next(
-        new apiError(500, "Sorry requsted category not registered ",null, false)
-      );
-    }
-
-    const deletedCategory = await CategoryModel.findOneAndDelete({
-      title: title,
-    });
-
-    if (!deletedCategory) {
-      return next(
-        new apiError(
-          500,
-          "Sorry can't delete category at the moment ",
-          null,
-          false
-        )
-      );
-    }
-
-    return res
-      .status(200)
-      .json(new apiSuccess(true, "Successfully deleted category", 200, false));
-  } catch (error) {
+  if (!requiredCategory) {
     return next(
-      new apiError(500, "Server side problem " + error.message, false)
+      new apiError(500, "Sorry requsted category not registered ", null, false)
     );
   }
+
+  const deletedCategory = await CategoryModel.findOneAndDelete({
+    title: title,
+  });
+
+  if (!deletedCategory) {
+    return next(
+      new apiError(
+        500,
+        "Sorry can't delete category at the moment ",
+        null,
+        false
+      )
+    );
+  }
+
+  return res
+    .status(200)
+    .json(new apiSuccess(true, "Successfully deleted category", 200, false));
 });
 
 module.exports = { deleteCategory };

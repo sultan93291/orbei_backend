@@ -16,7 +16,6 @@ const { asyncHandler } = require("../utils/asyncaHandler.js");
 // auth guard mechanism
 
 const resetAuthGuard = asyncHandler(async (req, res, next) => {
-  try {
     const { cookie, authorization } = req.headers;
     const removeBearer = authorization?.split("Bearer")[1];
     const token = removeBearer?.split("@")[1];
@@ -42,11 +41,6 @@ const resetAuthGuard = asyncHandler(async (req, res, next) => {
         next();
       }
     }
-  } catch (error) {
-    return next(
-      new apiError(500, "Server-side problem: " + error.message, null, false)
-    );
-  }
 });
 
 module.exports = { resetAuthGuard };

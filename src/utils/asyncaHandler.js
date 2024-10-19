@@ -19,7 +19,7 @@ const asyncHandler = (fun = () => {}) => {
       await fun(req, res, next);
     } catch (error) {
       next(
-        new apiError(false, null, 500, "Async Handeler Error: " + error.message)
+        new apiError(  500, "Async Handeler Error: " + error.message , null , false)
       );
     }
   };

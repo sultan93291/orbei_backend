@@ -18,54 +18,43 @@ const { asyncHandler } = require("../../../utils/asyncaHandler");
 
 // approve categories mechanism
 
-const approveCategoryController = asyncHandler(async (req, res,next) => {
-  try {
-    const { id } = req.params;
+const approveCategoryController = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
 
-    if (!id) {
-      return next(
-        new apiError(
-          500,
-          "Sorry requsted category not registered ",
-          null,
-          false
-        )
-      );
-    }
-    /// get data from cookies
-    const DecodedData = await decodeToken(req);
-
-    // checking is user existed
-    const isAuthor = DecodedData?.Data?.userRole == "admin";
-
-    if (!isAuthor) {
-      return next(new apiError(401, " Unauthorize opperation ", null, false));
-    }
-
-    const isExistedCategory = await CategoryModel.findById(id);
-    if (!isExistedCategory) {
-      return next(
-        new apiError(500, "Requested category does not exist", null, false)
-      );
-    }
-
-    if (isExistedCategory.isActive === true) {
-      return next(
-        new apiError(400, "Requested category already approved", null, false)
-      );
-    }
-
-    isExistedCategory.isActive = true;
-    isExistedCategory.save();
-
-    return res
-      .status(200)
-      .json(new apiSuccess(true, "Successfully approved category", 200, false));
-  } catch (error) {
+  if (!id) {
     return next(
-      new apiError(500, "Server side problem " + error.message, false)
+      new apiError(500, "Sorry requsted category not registered ", null, false)
     );
   }
+  /// get data from cookies
+  const DecodedData = await decodeToken(req);
+
+  // checking is user existed
+  const isAuthor = DecodedData?.Data?.userRole == "admin";
+
+  if (!isAuthor) {
+    return next(new apiError(401, " Unauthorize opperation ", null, false));
+  }
+
+  const isExistedCategory = await CategoryModel.findById(id);
+  if (!isExistedCategory) {
+    return next(
+      new apiError(500, "Requested category does not exist", null, false)
+    );
+  }
+
+  if (isExistedCategory.isActive === true) {
+    return next(
+      new apiError(400, "Requested category already approved", null, false)
+    );
+  }
+
+  isExistedCategory.isActive = true;
+  isExistedCategory.save();
+
+  return res
+    .status(200)
+    .json(new apiSuccess(true, "Successfully approved category", 200, false));
 });
 
 module.exports = { approveCategoryController };

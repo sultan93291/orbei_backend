@@ -30,7 +30,6 @@ const options = {
 // login function
 
 const loginUser = asyncHandler(async (req, res, next) => {
-  try {
     const { emailAddress, password } = await req.body;
 
     if (!emailAddress || !emailChecker(emailAddress)) {
@@ -86,11 +85,6 @@ const loginUser = asyncHandler(async (req, res, next) => {
           false
         )
       );
-  } catch (error) {
-    return next(
-      new apiError(500, "Server-side problem: " + error.message, null, false)
-    );
-  }
 });
 
 module.exports = { loginUser };

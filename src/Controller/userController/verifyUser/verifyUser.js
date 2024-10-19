@@ -20,7 +20,6 @@ const { asyncHandler } = require("../../../utils/asyncaHandler");
 // verify user account mechanism
 
 const verifyUserAccount = asyncHandler(async (req, res, next) => {
-  try {
     const { otp } = req.body;
 
     // decode token data
@@ -53,11 +52,6 @@ const verifyUserAccount = asyncHandler(async (req, res, next) => {
     return res
       .status(200)
       .json(new apiSuccess(true, "Your account is now verified", null, false));
-  } catch (error) {
-    return next(
-      new apiError(400, `Server side problem ${error.message}`, null, false)
-    );
-  }
 });
 
 module.exports = { verifyUserAccount };

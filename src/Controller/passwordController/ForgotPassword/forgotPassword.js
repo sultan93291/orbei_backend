@@ -21,41 +21,42 @@ const { mailSender } = require("../../../utils/sendMail");
 // forgot password mechanism
 
 const forgotPassword = asyncHandler(async (req, res, next) => {
-  try {
-    // extract data from body
-    const { emailAddress } = req.body;
+  // extract data from body
+  const { emailAddress } = req.body;
 
-    // check is valid email
-    if (!emailAddress || !emailChecker(emailAddress)) {
-      return next(new apiError(400, "Invalid email address", null, false));
-    }
-
-    // check is valid user
-    const isValidUser = await user.findOne({ emailAddress: emailAddress });
-
-    if (!isValidUser) {
-      return next(new apiError(400, "No user registered", null, false));
-    }
-
-    const otp = await otpGenerator();
-
-    await mailSender({
-      name: isValidUser.firstName,
-      emailAddress,
-      otp,
-    });
-
-    isValidUser.otp = otp;
-    await isValidUser.save();
-
-    return res
-      .status(200)
-      .json(new apiSuccess(true, "Confirm your indentity , please check your email address", 200, null));
-  } catch (error) {
-    return next(
-      new apiError(500, "server side problem:" + error.message, null, false)
-    );
+  // check is valid email
+  if (!emailAddress || !emailChecker(emailAddress)) {
+    return next(new apiError(400, "Invalid email address", null, false));
   }
+
+  // check is valid user
+  const isValidUser = await user.findOne({ emailAddress: emailAddress });
+
+  if (!isValidUser) {
+    return next(new apiError(400, "No user registered", null, false));
+  }
+
+  const otp = await otpGenerator();
+
+  await mailSender({
+    name: isValidUser.firstName,
+    emailAddress,
+    otp,
+  });
+
+  isValidUser.otp = otp;
+  await isValidUser.save();
+
+  return res
+    .status(200)
+    .json(
+      new apiSuccess(
+        true,
+        "Confirm your indentity , please check your email address",
+        200,
+        null
+      )
+    );
 });
 
-module.exports = {forgotPassword}
+module.exports = { forgotPassword };

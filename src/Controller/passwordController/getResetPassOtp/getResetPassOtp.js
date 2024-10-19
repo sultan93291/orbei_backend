@@ -26,65 +26,59 @@ const options = {
 
 // get reset  password otp   mechanism
 const getResetPasswordOtp = asyncHandler(async (req, res, next) => {
-  try {
-    // extract data from request body
-    const { emailAddress } = req.body;
+  // extract data from request body
+  const { emailAddress } = req.body;
 
-    // check is valid email
-    if (!emailAddress || !emailChecker(emailAddress)) {
-      return next(new apiError(400, "Invalid email address", null, false));
-    }
-
-    // check is valid user
-    const isValidUser = await user.findOne({ emailAddress: emailAddress });
-
-    if (!isValidUser) {
-      return next(new apiError(400, "No user registered", null, false));
-    }
-
-    // generate otp
-    const otp = await otpGenerator();
-
-    // save the otp to the database
-    isValidUser.resetOtp = otp;
-    await isValidUser.save();
-
-    // sending mail
-    const mailInfo = await mailSender({
-      name: isValidUser?.firstName,
-      emailAddress,
-      otp: otp,
-    });
-
-    // generate data for generating token
-    const data = {
-      emailAddress,
-      isReset: true,
-    };
-
-    // generate access token
-
-    const token = await generateAccessToken(data);
-
-    return res
-      .status(200)
-      .cookie("reset_token", token, options)
-      .json(
-        new apiSuccess(
-          true,
-          {
-            // " Reset OTP sent to you. Please check your email address. "
-            token,
-          },
-          null,
-          false
-        )
-      );
-  } catch (error) {
-    return next(
-      new apiError(500, `Server side problem : ${error.message}`, null, false)
-    );
+  // check is valid email
+  if (!emailAddress || !emailChecker(emailAddress)) {
+    return next(new apiError(400, "Invalid email address", null, false));
   }
+
+  // check is valid user
+  const isValidUser = await user.findOne({ emailAddress: emailAddress });
+
+  if (!isValidUser) {
+    return next(new apiError(400, "No user registered", null, false));
+  }
+
+  // generate otp
+  const otp = await otpGenerator();
+
+  // save the otp to the database
+  isValidUser.resetOtp = otp;
+  await isValidUser.save();
+
+  // sending mail
+  const mailInfo = await mailSender({
+    name: isValidUser?.firstName,
+    emailAddress,
+    otp: otp,
+  });
+
+  // generate data for generating token
+  const data = {
+    emailAddress,
+    isReset: true,
+  };
+
+  // generate access token
+
+  const token = await generateAccessToken(data);
+
+  return res
+    .status(200)
+    .cookie("reset_token", token, options)
+    .json(
+      new apiSuccess(
+        true,
+        {
+          // " Reset OTP sent to you. Please check your email address. "
+          token,
+        },
+        null,
+        false
+      )
+    );
 });
 
 module.exports = { getResetPasswordOtp };

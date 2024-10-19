@@ -11,87 +11,80 @@
 // External dependencies
 
 // Internal dependencies
-const { hashedPassword, decodePassword, decodeToken } = require("../../../helpers/helper");
+const {
+  hashedPassword,
+  decodePassword,
+  decodeToken,
+} = require("../../../helpers/helper");
 const { user } = require("../../../Schema/UserSchema");
 const { apiError } = require("../../../utils/apiError");
 const { apiSuccess } = require("../../../utils/apiSuccess");
 const { asyncHandler } = require("../../../utils/asyncaHandler");
 const { emailChecker, passwordChecker } = require("../../../utils/checker");
 
-
-
 // change password mechanism
 
 const changePassword = asyncHandler(async (req, res, next) => {
-  try {
-    // extract data from body
-    const {  currentPassword, newPassword, confirmPassword } =
-      req.body;
+  // extract data from body
+  const { currentPassword, newPassword, confirmPassword } = req.body;
 
-    // check is valid current  password
-    if (!newPassword || !passwordChecker(currentPassword)) {
-      return next(new apiError(400, "Invalid password signature", null, false));
-    }
+  // check is valid current  password
+  if (!newPassword || !passwordChecker(currentPassword)) {
+    return next(new apiError(400, "Invalid password signature", null, false));
+  }
 
-    // check is valid new password
-    if (!newPassword || !passwordChecker(newPassword)) {
-      return next(new apiError(400, "Invalid password signature", null, false));
-    }
-    // check is valid confirm password
-    if (!confirmPassword || !passwordChecker(confirmPassword)) {
-      return next(new apiError(400, "Invalid password signature", null, false));
-    }
+  // check is valid new password
+  if (!newPassword || !passwordChecker(newPassword)) {
+    return next(new apiError(400, "Invalid password signature", null, false));
+  }
+  // check is valid confirm password
+  if (!confirmPassword || !passwordChecker(confirmPassword)) {
+    return next(new apiError(400, "Invalid password signature", null, false));
+  }
 
-    // checking is both password and confirm password are same
-    if (confirmPassword !== newPassword) {
-      return next(new apiError(400, "check your password again", null, false));
-    }
+  // checking is both password and confirm password are same
+  if (confirmPassword !== newPassword) {
+    return next(new apiError(400, "check your password again", null, false));
+  }
 
-    // decode token data
+  // decode token data
+  const data = await decodeToken(req);
 
-    const data = await decodeToken(req)
+  // check is valid user
+  const isValidUser = await user.findById(data?.Data?.userId);
+  console.log(isValidUser);
 
+  if (!isValidUser) {
+    return next(new apiError(400, "No user registered", null, false));
+  }
 
+  // const is valid and verified current password
+  const isValidPass = await decodePassword(
+    currentPassword,
+    isValidUser?.password
+  );
 
-    // check is valid user
-    const isValidUser = await user.findById(data?.Data?.userId);
-    console.log(isValidUser);
-    
-
-
-    if (!isValidUser) {
-      return next(new apiError(400, "No user registered", null, false));
-    }
-
-    // const is valid and verified current password
-    const isValidPass = await decodePassword(currentPassword , isValidUser?.password);
-
-    if (!isValidPass) {
-      return next(
-        new apiError(
-          400,
-          " Password didn't match , please try again",
-          null,
-          false
-        )
-      );
-    }
-
-    /// if valid user & verified current password  then hash the new password
-
-    const hashedPass = await hashedPassword(newPassword);
-
-    isValidUser.password = hashedPass;
-    await isValidUser.save();
-
-    return res
-      .status(200)
-      .json(new apiSuccess(true, "Successfully changed password", 200, null));
-  } catch (error) {
+  if (!isValidPass) {
     return next(
-      new apiError(500, "server side problem:" + error.message, null, false)
+      new apiError(
+        400,
+        " Password didn't match , please try again",
+        null,
+        false
+      )
     );
   }
+
+  /// if valid user & verified current password  then hash the new password
+
+  const hashedPass = await hashedPassword(newPassword);
+
+  isValidUser.password = hashedPass;
+  await isValidUser.save();
+
+  return res
+    .status(200)
+    .json(new apiSuccess(true, "Successfully changed password", 200, null));
 });
 
 module.exports = { changePassword };

@@ -18,29 +18,23 @@ const { asyncHandler } = require("../../../utils/asyncaHandler.js");
 // get all registered user mechanisms
 
 const getAllRegisteredCategory = asyncHandler(async (req, res, next) => {
-  try {
-    // get all registered category
-    const allCategory = await CategoryModel.find({})
+  // get all registered category
+  const allCategory = await CategoryModel.find({});
 
-    if (!(allCategory.length > 0)) {
-      return next(new apiError(500, "Sorry no registered category ", false));
-    }
-
-    return res.status(200).json(
-      new apiSuccess(
-        true,
-        {
-          allCategory: allCategory,
-        },
-        200,
-        false
-      )
-    );
-  } catch (error) {
-    return next(
-      new apiError(500, "Server side problem " + error.message, false)
-    );
+  if (!(allCategory.length > 0)) {
+    return next(new apiError(500, "Sorry no registered category ", false));
   }
+
+  return res.status(200).json(
+    new apiSuccess(
+      true,
+      {
+        allCategory: allCategory,
+      },
+      200,
+      false
+    )
+  );
 });
 
 module.exports = { getAllRegisteredCategory };

@@ -19,7 +19,6 @@ const { emailChecker, numberChecker } = require("../../../utils/checker");
 
 // update user details mechanism
 const updateUserDetails = asyncHandler(async (req, res, next) => {
-  try {
     // Extracting user data from req.body
     const {
       firstName,
@@ -93,11 +92,6 @@ const updateUserDetails = asyncHandler(async (req, res, next) => {
       .json(
         new apiSuccess(true, "Succesfully updated user Details", 200, false)
       );
-  } catch (error) {
-    return next(
-      new apiError(500, `Server side problem : ${error.message}`, null, false)
-    );
-  }
 });
 
 module.exports = { updateUserDetails };

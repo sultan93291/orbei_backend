@@ -19,7 +19,7 @@ const { passwordChecker } = require("../../../utils/checker");
 
 // delete user account mechanism
 const deleteUserAccount = asyncHandler(async (req, res, next) => {
-  try {
+
     // extracting data from request body
     const { password } = req.body;
 
@@ -60,11 +60,6 @@ const deleteUserAccount = asyncHandler(async (req, res, next) => {
       .json(
         new apiSuccess(true, "Successfully deleted user account", 200, false)
       );
-  } catch (error) {
-    return next(
-      new apiError(500, `Server side problem : ${error.message}`, false)
-    );
-  }
 });
 
 module.exports = { deleteUserAccount };

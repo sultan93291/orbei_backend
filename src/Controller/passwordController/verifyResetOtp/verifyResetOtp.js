@@ -23,51 +23,43 @@ const options = {
 
 // reset pass otp verification mechanism
 const verifyResetPassOtp = asyncHandler(async (req, res, next) => {
-  try {
-    const { otp } = req.body;
+  const { otp } = req.body;
 
-    if (!otp) {
-      return next(new apiError(400, "Invalid otp ", null, false));
-    }
-
-    // get data form cookies
-    const DecodedData = await decodeToken(req);
-
-    // is existing user
-    const existingUser = await user.findOne({
-      emailAddress: DecodedData?.Data?.emailAddress,
-    });
-
-    if (!existingUser) {
-      return next(new apiError(400, "Invalid  user ", null, false));
-    }
-    if (existingUser?.resetOtp !== otp) {
-      return next(
-        new apiError(401, "Invalid  otp , chekc again ", null, false)
-      );
-    }
-    existingUser.resetOtp = null;
-    existingUser.isValidatedResetAuth = true;
-    await existingUser.save();
-
-    // generate data for cookie
-    const data = {
-      emailAddress: existingUser?.emailAddress,
-      isvalidAuth: existingUser?.isValidatedResetAuth,
-      isReset: true,
-    };
-
-    const token = await generateAccessToken(data);
-
-    return res
-      .status(200)
-      .cookie("reset_token", token, options)
-      .json(new apiSuccess(true, token, 200, false));
-  } catch (error) {
-    return next(
-      new apiError(500, `Server side problem : ${error.message}`, null, false)
-    );
+  if (!otp) {
+    return next(new apiError(400, "Invalid otp ", null, false));
   }
+
+  // get data form cookies
+  const DecodedData = await decodeToken(req);
+
+  // is existing user
+  const existingUser = await user.findOne({
+    emailAddress: DecodedData?.Data?.emailAddress,
+  });
+
+  if (!existingUser) {
+    return next(new apiError(400, "Invalid  user ", null, false));
+  }
+  if (existingUser?.resetOtp !== otp) {
+    return next(new apiError(401, "Invalid  otp , chekc again ", null, false));
+  }
+  existingUser.resetOtp = null;
+  existingUser.isValidatedResetAuth = true;
+  await existingUser.save();
+
+  // generate data for cookie
+  const data = {
+    emailAddress: existingUser?.emailAddress,
+    isvalidAuth: existingUser?.isValidatedResetAuth,
+    isReset: true,
+  };
+
+  const token = await generateAccessToken(data);
+
+  return res
+    .status(200)
+    .cookie("reset_token", token, options)
+    .json(new apiSuccess(true, token, 200, false));
 });
 
 module.exports = { verifyResetPassOtp };

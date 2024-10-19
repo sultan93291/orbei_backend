@@ -34,7 +34,6 @@ const options = {
 
 // Function for handling user creation
 const CreateUser = asyncHandler(async (req, res, next) => {
-  try {
     // Extracting user data from req.body
     const {
       firstName,
@@ -160,12 +159,6 @@ const CreateUser = asyncHandler(async (req, res, next) => {
           )
         );
     }
-  } catch (error) {
-    // Forwarding any unexpected errors to the error-handling middleware
-    return next(
-      new apiError(500, "Server-side problem: " + error.message, null, false)
-    );
-  }
 });
 
 // Exporting CreateUser function for routing
