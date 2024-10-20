@@ -13,7 +13,7 @@ const { Schema } = mongoose;
 const { model, models } = mongoose;
 
 // Category schema definition
-const categorySchema = new Schema(
+const subCategorySchema = new Schema(
   {
     title: {
       type: String,
@@ -29,23 +29,17 @@ const categorySchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "product",
     },
-    isActive: {
-      type: Boolean,
-      default: false,
+    category: {
+      type: Schema.Types.ObjectId,
+      ref: "category",
+      required: [true, "Category is required"],
     },
-    subcategory: [
-      {
-
-        type: Schema.Types.ObjectId,
-        ref: "sub_category",
-        required: [true, "Description is required"],
-      },
-    ],
   },
   { timestamps: true }
 );
 
 // Check if model exists or create a new one
-const CategoryModel = models.category || model("category", categorySchema);
+const SubCategoryModel =
+  models.sub_category || model("sub_category", subCategorySchema);
 
-module.exports = { CategoryModel };
+module.exports = { SubCategoryModel };
