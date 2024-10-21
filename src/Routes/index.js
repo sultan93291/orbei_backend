@@ -18,9 +18,11 @@ const router = Router();
 const authRoutes = require("./Api/Auth.Api.js");
 const passwordRoutes = require("./Api/Password.Api.js");
 const categoryRoutes = require("./Api/Catergory.Api.js");
+const subCategoryRoutes = require("./Api/SubCategory.Api.js")
 
 const { apiError } = require("../utils/apiError.js");
 const { apiSuccess } = require("../utils/apiSuccess.js");
+
 
 // initialization of routes if valid routes then it's gonna porced to the routes . or else it's gonna send an error invlaid or not found routes
 
@@ -41,6 +43,7 @@ router.route(process.env.VERSION_NAME).get((req, res) => {
 router.use(process.env.VERSION_NAME, authRoutes);
 router.use(process.env.VERSION_NAME, passwordRoutes);
 router.use(process.env.VERSION_NAME, categoryRoutes);
+router.use(process.env.VERSION_NAME, subCategoryRoutes);
 router.use(process.env.VERSION_NAME, (req, res) => {
   res.status(404).json(new apiError(404, "Api Routes InValid !!", false));
 });

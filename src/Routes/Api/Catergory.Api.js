@@ -2,7 +2,7 @@
   /*
    * author: Md. Abib Ahmed Dipto
    * date: 28-08-2024
-   * description: This is the route handler file for handling all password-related routes. It forwards route requests to corresponding controller functions.
+   * description: This is the route handler file for handling all category routes. It forwards route requests to corresponding controller functions.
    * copyright: abib.web.dev@gmail.com
    */
 }
