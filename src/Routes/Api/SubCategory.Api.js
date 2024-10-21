@@ -23,11 +23,13 @@ const {
 const {
   getAllRegisteredSubCategory,
 } = require("../../Controller/subCategoryController/getAllSubCategory/getAllSubCategory");
+const {
+  getRegisteredSubCategory,
+} = require("../../Controller/subCategoryController/getSingleSubCategory/getSingleSubCategory");
 
 // Helper files
 const { apiSuccess } = require("../../utils/apiSuccess");
 const { authguard } = require("../../middleware/authGuard");
-
 
 // Base route
 router.route("/get-sub-category-api").get((req, res) => {
@@ -52,7 +54,12 @@ router.route("/create-sub-category/:id").post(authguard, createSubCategory);
 // All PUT routes
 
 // All GET routes
-router.route("/get-all-sub-category/:id").get(authguard,getAllRegisteredSubCategory );
+router
+  .route("/get-all-sub-category/:id")
+  .get(authguard, getAllRegisteredSubCategory);
+router
+  .route("/get-sub-category/:id")
+  .get(authguard, getRegisteredSubCategory);
 // All DELETE routes
 
 module.exports = router;

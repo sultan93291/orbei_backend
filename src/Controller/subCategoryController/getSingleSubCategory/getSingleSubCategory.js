@@ -1,7 +1,7 @@
 /*
  * author: Md. Abib Ahmed Dipto
  * date: 22-10-2024
- * description: This file is gonna  get all  subcategory from db . this file gonna return all current sub category of requsted category.
+ * description: This file is gonna  get requested   subcategory from db . this file gonna return the inputed id sub category details .
  * copyright: abib.web.dev@gmail.com
  */
 
@@ -17,30 +17,31 @@ const { asyncHandler } = require("../../../utils/asyncaHandler.js");
 
 // get all registered user mechanisms
 
-const getAllRegisteredSubCategory = asyncHandler(async (req, res, next) => {
+const getRegisteredSubCategory = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
 
   // get all registered category
-  const allSubCategory = await SubCategoryModel.find({
-    category: id,
-  }).populate("category");
+  const isExistedSubCategory = await SubCategoryModel.findById(id);
 
-  if (!(allSubCategory.length > 0)) {
+  if (!isExistedSubCategory) {
     return next(
-      new apiError(500, "Sorry no registered sub category ", null, false)
+      new apiError(
+        500,
+        "Sorry requsted sub category is not registered  ",
+        null,
+        false
+      )
     );
   }
 
   return res.status(200).json(
     new apiSuccess(
       true,
-      {
-        allCategory: allSubCategory,
-      },
+      isExistedSubCategory,
       200,
       false
     )
   );
 });
 
-module.exports = { getAllRegisteredSubCategory };
+module.exports = { getRegisteredSubCategory };
