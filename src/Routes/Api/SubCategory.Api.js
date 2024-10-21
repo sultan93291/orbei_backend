@@ -1,7 +1,7 @@
 {
   /*
    * author: Md. Abib Ahmed Dipto
-   * date: 28-08-2024
+   * date: 21-10-2024
    * description: This is the route handler file for handling all sub category routes. It forwards route requests to corresponding controller functions.
    * copyright: abib.web.dev@gmail.com
    */
@@ -20,10 +20,14 @@ const router = Router();
 const {
   createSubCategory,
 } = require("../../Controller/subCategoryController/createSubCategory/createSubCategory");
+const {
+  getAllRegisteredSubCategory,
+} = require("../../Controller/subCategoryController/getAllSubCategory/getAllSubCategory");
 
 // Helper files
 const { apiSuccess } = require("../../utils/apiSuccess");
 const { authguard } = require("../../middleware/authGuard");
+
 
 // Base route
 router.route("/get-sub-category-api").get((req, res) => {
@@ -48,7 +52,7 @@ router.route("/create-sub-category/:id").post(authguard, createSubCategory);
 // All PUT routes
 
 // All GET routes
-
+router.route("/get-all-sub-category/:id").get(authguard,getAllRegisteredSubCategory );
 // All DELETE routes
 
 module.exports = router;
