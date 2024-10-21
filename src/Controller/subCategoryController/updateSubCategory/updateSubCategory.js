@@ -11,33 +11,36 @@
 
 // Internal dependencies
 const { decodeToken } = require("../../../helpers/helper.js");
-const { CategoryModel } = require("../../../Schema/CategorySchema.js");
+const { SubCategoryModel } = require("../../../Schema/SubCategorySchema.js");
 const { apiError } = require("../../../utils/apiError.js");
 const { apiSuccess } = require("../../../utils/apiSuccess.js");
 const { asyncHandler } = require("../../../utils/asyncaHandler.js");
 
 // get all registered user mechanisms
 
-const updateCategory = asyncHandler(async (req, res, next) => {
+const updateSubCategory = asyncHandler(async (req, res, next) => {
   // get data from params
   const { id } = req.params;
+  
 
   if (!id) {
-    return next(new apiError(400, "Please provide a id", null, false));
+    return next(new apiError(400, "Please provide a category ID", null, false));
   }
   // get data from body
-  const { upDatedTitlte, description } = req.body;
+  const { updatedTitle, description } = req.body;
 
-  if (!upDatedTitlte && description) {
-    return next(new apiError(400, "Please add title or description ", null, false));
+  if (!updatedTitle && !description) {
+    return next(
+      new apiError(400, "Please add title or description", null, false)
+    );
   }
 
   // get single registered category
-  const requiredCategory = await CategoryModel.findById(id);
+  const requiredSubCategory = await SubCategoryModel.findById(id);
 
-  if (!requiredCategory) {
+  if (!requiredSubCategory) {
     return next(
-      new apiError(500, "Sorry required category not registered ", null, false)
+      new apiError(404, "Sorry sub category is not registered ", null, false)
     );
   }
 
@@ -55,26 +58,19 @@ const updateCategory = asyncHandler(async (req, res, next) => {
 
   // updated category
   const updatedData = {
-    title: upDatedTitlte ?? requiredCategory.title,
-    description: description ?? requiredCategory.description,
+    title: updatedTitle ?? requiredSubCategory.title,
+    description: description ?? requiredSubCategory.description,
   };
 
-  const updatedCategory = await CategoryModel.findOneAndUpdate(
-    { title: title },
-    { ...updatedData },
+  const updatedSubCategory = await SubCategoryModel.findByIdAndUpdate(
+    id,
+    updatedData,
     { new: true }
   );
 
-  return res.status(200).json(
-    new apiSuccess(
-      true,
-      {
-        updatedCategory: updatedCategory,
-      },
-      200,
-      false
-    )
-  );
+  return res
+    .status(200)
+    .json(new apiSuccess(true, updatedSubCategory, 200, false));
 });
 
-module.exports = { updateCategory };
+module.exports = { updateSubCategory };

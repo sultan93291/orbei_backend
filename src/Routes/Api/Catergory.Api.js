@@ -63,7 +63,7 @@ router.route("/get-category-api").get((req, res) => {
 router.route("/create-category").post(authguard, createCategory);
 
 // All PUT routes
-router.route("/update-category/:title").put(authguard, updateCategory);
+router.route("/update-category/:id").put(authguard, updateCategory);
 router.route("/approve-category/:id").put(authguard, approveCategoryController);
 
 // All GET routes
