@@ -73,6 +73,6 @@ router
   .get(authguard, getSingleRegisteredCategory);
 
 // All DELETE routes
-router.route("/delete-category/:title").delete(authguard, deleteCategory);
+router.route("/delete-category/:id").delete(authguard, deleteCategory);
 
 module.exports = router;

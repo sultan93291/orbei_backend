@@ -20,10 +20,10 @@ const { asyncHandler } = require("../../../utils/asyncaHandler.js");
 
 const deleteCategory = asyncHandler(async (req, res, next) => {
   // get data from params
-  const { title } = req.params;
+  const { id } = req.params;
 
-  if (!title) {
-    return next(new apiError(400, "Please provide a title", null, false));
+  if (!id) {
+    return next(new apiError(400, "Please provide a id", null, false));
   }
 
   /// get data from cookies
@@ -37,9 +37,7 @@ const deleteCategory = asyncHandler(async (req, res, next) => {
   }
 
   // get single registered category
-  const requiredCategory = await CategoryModel.findOne({
-    title: title,
-  });
+  const requiredCategory = await CategoryModel.findById(id)
 
   if (!requiredCategory) {
     return next(
@@ -47,14 +45,11 @@ const deleteCategory = asyncHandler(async (req, res, next) => {
     );
   }
 
-  const deletedCategory = await CategoryModel.findOneAndDelete({
-    title: title,
-  });
-
+  const deletedCategory = await CategoryModel.findByIdAndDelete(id)
   if (!deletedCategory) {
     return next(
       new apiError(
-        500,
+        404,
         "Sorry can't delete category at the moment ",
         null,
         false

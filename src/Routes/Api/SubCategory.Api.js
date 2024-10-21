@@ -29,11 +29,14 @@ const {
 const {
   updateSubCategory,
 } = require("../../Controller/subCategoryController/updateSubCategory/updateSubCategory");
-
+const {
+  deleteSubCategory,
+} = require("../../Controller/subCategoryController/deleteSubCategory/deleteSubCategory");
 
 // Helper files
 const { apiSuccess } = require("../../utils/apiSuccess");
 const { authguard } = require("../../middleware/authGuard");
+
 
 
 // Base route
@@ -68,5 +71,6 @@ router
   .get(authguard, getRegisteredSubCategory);
 
 // All DELETE routes
+router.route("/delete-sub-category/:id").delete(authguard, deleteSubCategory);
 
 module.exports = router;
