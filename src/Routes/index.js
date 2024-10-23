@@ -15,11 +15,15 @@ const { Router } = express;
 const router = Router();
 
 // internal dependencies
+
+//all route dependencies
 const authRoutes = require("./Api/Auth.Api.js");
 const passwordRoutes = require("./Api/Password.Api.js");
 const categoryRoutes = require("./Api/Catergory.Api.js");
 const subCategoryRoutes = require("./Api/SubCategory.Api.js")
+const MerchantControllerRoutes = require("./Api/Merchant.Api.js");
 
+// Helper files
 const { apiError } = require("../utils/apiError.js");
 const { apiSuccess } = require("../utils/apiSuccess.js");
 
@@ -44,6 +48,7 @@ router.use(process.env.VERSION_NAME, authRoutes);
 router.use(process.env.VERSION_NAME, passwordRoutes);
 router.use(process.env.VERSION_NAME, categoryRoutes);
 router.use(process.env.VERSION_NAME, subCategoryRoutes);
+router.use(process.env.VERSION_NAME, MerchantControllerRoutes);
 router.use(process.env.VERSION_NAME, (req, res) => {
   res.status(404).json(new apiError(404, "Api Routes InValid !!", false));
 });

@@ -40,14 +40,12 @@ const merchantSchema = new Schema(
       {
         type: Schema.Types.ObjectId,
         ref: "category",
-        required: [true, "Category is required"],
       },
     ],
     subcategory: [
       {
         type: Schema.Types.ObjectId,
         ref: "sub_category",
-        required: [true, "Sub category is required"],
       },
     ],
     isVerifiedMerchant: {
