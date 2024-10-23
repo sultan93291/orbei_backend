@@ -35,10 +35,9 @@ const categorySchema = new Schema(
     },
     subcategory: [
       {
-
         type: Schema.Types.ObjectId,
         ref: "sub_category",
-        required: [true, "Description is required"],
+        required: [true, "Sub category is required"],
       },
     ],
   },
