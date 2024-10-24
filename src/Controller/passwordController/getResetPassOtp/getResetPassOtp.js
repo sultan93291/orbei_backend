@@ -53,7 +53,12 @@ const getResetPasswordOtp = asyncHandler(async (req, res, next) => {
     name: isValidUser?.firstName,
     emailAddress,
     otp: otp,
+    type: "verification",
   });
+
+  if (!mailInfo) {
+    return next(new apiError(500, "Failed to send email", null, false));
+  }
 
   // generate data for generating token
   const data = {
