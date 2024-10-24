@@ -13,18 +13,9 @@ const { apiError } = require("../../../utils/apiError"); // Custom error handlin
 const { apiSuccess } = require("../../../utils/apiSuccess"); // Custom success handling utility
 const { asyncHandler } = require("../../../utils/asyncaHandler"); // Asynchronous error handling wrapper
 const { merchantModel } = require("../../../Schema/MerchantSchema"); // Merchant schema/model
-const {
-  decodeToken,
-  decodePassword,
-  generateAccessToken,
-} = require("../../../helpers/helper"); // Token decoding and password validation helpers
+const { decodeToken, decodePassword } = require("../../../helpers/helper"); // Token decoding and password validation helpers
 const { emailChecker, passwordChecker } = require("../../../utils/checker"); // Email and password validation utilities
 const { user } = require("../../../Schema/UserSchema"); // User schema/model
-
-const options = {
-  httpOnly: true,
-  secure: true,
-};
 
 // Function for handling merchant creation
 const createMerchant = asyncHandler(async (req, res, next) => {
@@ -87,14 +78,13 @@ const createMerchant = asyncHandler(async (req, res, next) => {
     return next(
       new apiError(
         401,
-        "Unauthorized: To become a merchant, you need to verify your account",
+        "Unauthorized: To become a merchant, you need to verify your user account",
         null,
         false
       )
     );
   }
 
-  console.log(DecodedData);
 
   // Create a new merchant entry
   const newMerchant = new merchantModel({
@@ -117,43 +107,18 @@ const createMerchant = asyncHandler(async (req, res, next) => {
     );
   }
 
-  // Update user's role to 'merchant'
-  isExistedUser.role = "merchant";
-  await isExistedUser.save();
-
-  // Prepare data for token generation
-  const data = {
-    email: isExistedUser.emailAddress,
-    telephone: isExistedUser.telephone,
-    userName: isExistedUser.firstName,
-    userId: isExistedUser._id,
-    isVerified: isExistedUser.isVerified,
-    userRole: isExistedUser.role,
-    isVerifiedMerchant: savedMerchant.isVerifiedMerchant,
-    merchantId:savedMerchant._id
-  };
-
-  // Generate and save access token
-  const token = await generateAccessToken(data);
-  isExistedUser.refreshToken = token;
-  await isExistedUser.save();
-
   // Return success response with cookie
-  return res
-    .status(200)
-    .cookie("access_token", token, options)
-    .json(
-      new apiSuccess(
-        true,
-        {
-          message:
-            "Your merchant request account has been accepted, wait for admin approval",
-          token: token,
-        },
-        null,
-        false
-      )
-    );
+  return res.status(200).json(
+    new apiSuccess(
+      true,
+      {
+        message:
+          "Your merchant request has been submitted successfully. Please wait for admin approval.",
+      },
+      null,
+      false
+    )
+  );
 });
 
 module.exports = { createMerchant };

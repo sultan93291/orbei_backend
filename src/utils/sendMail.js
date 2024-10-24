@@ -13,10 +13,16 @@ const nodemailer = require("nodemailer");
 
 // internal dependencies
 const { EmailTemplate } = require("../helpers/EmailTemplate");
+const {MerchantApprovalTemplate} = require("../helpers/verifiedMerchantEmailTemplate")
 
-const mailSender = async ({ name, emailAddress, otp }) => {
-  // Create a transporter object using SMTP transport
+const mailSender = async ({
+  name,
+  emailAddress,
+  otp = null,
+  type = "verification",
+}) => {
   try {
+    // Create a transporter object using SMTP transport
     const transporter = nodemailer.createTransport({
       service: "gmail",
       secure: true,
@@ -26,20 +32,37 @@ const mailSender = async ({ name, emailAddress, otp }) => {
       },
     });
 
+    // Choose email template based on type
+    let emailTemplate;
+    let subject;
+
+    if (type === "verification") {
+      // Require OTP for verification emails
+      if (!otp) throw new Error("OTP is required for verification emails.");
+      emailTemplate = EmailTemplate(name, otp);
+      subject = "Verify your account";
+    } else if (type === "merchantApproval") {
+      // No OTP needed for merchant approval emails
+      emailTemplate = MerchantApprovalTemplate(name);
+      subject = "Your merchant account has been approved!";
+    } else {
+      throw new Error("Invalid email type specified.");
+    }
+
     // Define the email options
     const mailOptions = {
       from: "abib.web.dev@gmail.com",
-      to: `${emailAddress}`,
-      subject: `Verify your account`,
-      html: EmailTemplate(name, otp),
+      to: emailAddress,
+      subject: subject,
+      html: emailTemplate,
     };
 
     // Send the email
     const info = await transporter.sendMail(mailOptions);
-    
     return info;
   } catch (error) {
-    console.log(error.code);
+    console.error(`Error: ${error.message}`);
+    return null; // or rethrow error based on your error handling preference
   }
 };
 

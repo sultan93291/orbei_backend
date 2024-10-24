@@ -20,11 +20,13 @@ const router = Router();
 const {
   createMerchant,
 } = require("../../Controller/marchentController/createMerchant/createMerchant");
+const {
+  approveMerchant,
+} = require("../../Controller/marchentController/approveMerchantRequest/approveMerchantRequest");
 
 // Helper files
 const { apiSuccess } = require("../../utils/apiSuccess");
 const { authguard } = require("../../middleware/authGuard");
-
 
 // Base route
 router.route("/get-merchant-api").get((req, res) => {
@@ -46,13 +48,12 @@ router.route("/get-merchant-api").get((req, res) => {
 // All POST routes
 router.route("/create-merchant").post(authguard, createMerchant);
 
-// All PUT routes
+router.route("/approve-merchant/:id").post(authguard, approveMerchant);
 
+// All PUT routes
 
 // All GET routes
 
-
 // All DELETE routes
-
 
 module.exports = router;

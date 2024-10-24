@@ -15,11 +15,11 @@ const { apiError } = require("../../../utils/apiError.js");
 const { apiSuccess } = require("../../../utils/apiSuccess.js");
 const { asyncHandler } = require("../../../utils/asyncaHandler.js");
 const { emailChecker, passwordChecker } = require("../../../utils/checker.js");
+const { merchantModel } = require("../../../Schema/MerchantSchema.js");
 
 const {
   generateAccessToken,
   decodePassword,
-  hashedPassword,
 } = require("../../../helpers/helper.js");
 
 const options = {
@@ -30,61 +30,66 @@ const options = {
 // login function
 
 const loginUser = asyncHandler(async (req, res, next) => {
-    const { emailAddress, password } = await req.body;
+  const { emailAddress, password } = req.body;
 
-    if (!emailAddress || !emailChecker(emailAddress)) {
-      return next(
-        new apiError(400, "Please enter a valid email address", null, false)
-      );
+  if (!emailAddress || !emailChecker(emailAddress)) {
+    return next(
+      new apiError(400, "Please enter a valid email address", null, false)
+    );
+  }
+
+  if (!password || !passwordChecker(password)) {
+    return next(
+      new apiError(400, "Please enter a valid password", null, false)
+    );
+  }
+
+  // Checking if user already exists
+  const isExistedUser = await user.findOne({ emailAddress });
+
+  if (!isExistedUser) {
+    return next(
+      new apiError(400, " Invalid username or password ", null, false)
+    );
+  }
+
+  const isValidPass = await decodePassword(password, isExistedUser?.password);
+
+  if (!isValidPass) {
+    return next(new apiError(400, "Invalid username or password ", false));
+  }
+
+  const data = {
+    email: isExistedUser.emailAddress,
+    telephone: isExistedUser.telephone,
+    firstName: isExistedUser.firstName,
+    userId: isExistedUser?._id,
+    isVerified: isExistedUser?.isVerified,
+    userRole: isExistedUser?.role,
+  };
+
+  if (isExistedUser.role === "merchant") {
+    // cheking is user a merchant
+    const isExistedMerchant = await merchantModel.findOne({
+      userId: isExistedUser.userId,
+    });
+
+    if (isExistedMerchant && isExistedMerchant.isVerifiedMerchant) {
+      (data.merchantId = isExistedMerchant._id),
+        (data.isVerifiedMerchant = isExistedMerchant.isVerifiedMerchant);
     }
+  }
 
-    if (!password || !passwordChecker(password)) {
-      return next(
-        new apiError(400, "Please enter a valid password", null, false)
-      );
-    }
+  // generate access token
+  const token = await generateAccessToken(data);
 
-    // Checking if user already exists
-    const isExistedUser = await user.findOne({ emailAddress });
-
-    if (!isExistedUser) {
-      return next(
-        new apiError(400, " Invalid username or password ", null, false)
-      );
-    }
-
-    const isValidPass = await decodePassword(password, isExistedUser?.password);
-
-    if (!isValidPass) {
-      return next(new apiError(400, "Invalid username or password ", false));
-    }
-
-    const data = {
-      email: isExistedUser.emailAddress,
-      telephone: isExistedUser.telephone,
-      firstName: isExistedUser.firstName,
-      userId: isExistedUser?._id,
-      isVerified: isExistedUser?.isVerified,
-      userRole: isExistedUser?.role,
-    };
-
-    // generate access token
-    const token = await generateAccessToken(data);
-
-    // saving current access token
-    isExistedUser.refreshToken = token;
-    await isExistedUser.save();
-    return res
-      .status(200)
-      .cookie("access_token", token, options)
-      .json(
-        new apiSuccess(
-          true,
-          { firstName: isExistedUser?.firstName, token: token },
-          200,
-          false
-        )
-      );
+  // saving current access token
+  isExistedUser.refreshToken = token;
+  await isExistedUser.save();
+  return res
+    .status(200)
+    .cookie("access_token", token, options)
+    .json(new apiSuccess(true, data, 200, false));
 });
 
 module.exports = { loginUser };
