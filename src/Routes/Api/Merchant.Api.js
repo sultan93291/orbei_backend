@@ -19,10 +19,14 @@ const router = Router();
 // All  controllers
 const {
   createMerchant,
-} = require("../../Controller/marchentController/createMerchant/createMerchant");
+} = require("../../Controller/merchantController/createMerchant/createMerchant");
 const {
   approveMerchant,
-} = require("../../Controller/marchentController/approveMerchantRequest/approveMerchantRequest");
+} = require("../../Controller/merchantController/approveMerchantRequest/approveMerchantRequest");
+const {
+  showAllMerchantRequests,
+} = require("../../Controller/merchantController/showAllMerchantRequest/showAllMerchantRequest");
+
 
 // Helper files
 const { apiSuccess } = require("../../utils/apiSuccess");
@@ -53,6 +57,7 @@ router.route("/approve-merchant/:id").post(authguard, approveMerchant);
 // All PUT routes
 
 // All GET routes
+router.route("/merchant-requests").get(authguard, showAllMerchantRequests);
 
 // All DELETE routes
 
