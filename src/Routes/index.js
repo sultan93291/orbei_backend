@@ -22,6 +22,7 @@ const passwordRoutes = require("./Api/Password.Api.js");
 const categoryRoutes = require("./Api/Catergory.Api.js");
 const subCategoryRoutes = require("./Api/SubCategory.Api.js")
 const MerchantControllerRoutes = require("./Api/Merchant.Api.js");
+const productControllerRoutes = require("./Api/Product.Api.js");
 
 // Helper files
 const { apiError } = require("../utils/apiError.js");
@@ -49,6 +50,7 @@ router.use(process.env.VERSION_NAME, passwordRoutes);
 router.use(process.env.VERSION_NAME, categoryRoutes);
 router.use(process.env.VERSION_NAME, subCategoryRoutes);
 router.use(process.env.VERSION_NAME, MerchantControllerRoutes);
+router.use(process.env.VERSION_NAME, productControllerRoutes);
 router.use(process.env.VERSION_NAME, (req, res) => {
   res.status(404).json(new apiError(404, "Api Routes InValid !!", false));
 });
