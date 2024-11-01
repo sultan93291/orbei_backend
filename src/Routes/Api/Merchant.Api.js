@@ -1,7 +1,7 @@
 {
   /*
    * author: Md. Abib Ahmed Dipto
-   * date: 21-10-2024
+   * date: 01-11-2024
    * description: This is the route handler file for handling all sub category routes. It forwards route requests to corresponding controller functions.
    * copyright: abib.web.dev@gmail.com
    */
@@ -26,11 +26,14 @@ const {
 const {
   showAllMerchantRequests,
 } = require("../../Controller/merchantController/showAllMerchantRequest/showAllMerchantRequest");
-
+const {
+  getSingleMerchant,
+} = require("../../Controller/merchantController/getSingleMerchant/getSingleMerchant");
 
 // Helper files
 const { apiSuccess } = require("../../utils/apiSuccess");
 const { authguard } = require("../../middleware/authGuard");
+
 
 // Base route
 router.route("/get-merchant-api").get((req, res) => {
@@ -58,6 +61,7 @@ router.route("/approve-merchant/:id").post(authguard, approveMerchant);
 
 // All GET routes
 router.route("/merchant-requests").get(authguard, showAllMerchantRequests);
+router.route("/get-single-merchant/:id").get(authguard, getSingleMerchant);
 
 // All DELETE routes
 
