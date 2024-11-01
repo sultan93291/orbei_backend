@@ -29,10 +29,15 @@ const {
 const {
   getSingleMerchant,
 } = require("../../Controller/merchantController/getSingleMerchant/getSingleMerchant");
+const {
+  getAllVerifiedMerchants,
+} = require("../../Controller/merchantController/getAllVerifiedMerchant/getAllVerifiedMerchant");
 
 // Helper files
 const { apiSuccess } = require("../../utils/apiSuccess");
 const { authguard } = require("../../middleware/authGuard");
+
+
 
 
 // Base route
@@ -62,6 +67,8 @@ router.route("/approve-merchant/:id").post(authguard, approveMerchant);
 // All GET routes
 router.route("/merchant-requests").get(authguard, showAllMerchantRequests);
 router.route("/get-single-merchant/:id").get(authguard, getSingleMerchant);
+router.route("/merchant-requests").get(authguard, showAllMerchantRequests);
+router.route("/get-all-verified-merchant").get(authguard, getAllVerifiedMerchants);
 
 // All DELETE routes
 
