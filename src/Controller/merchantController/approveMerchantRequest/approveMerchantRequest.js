@@ -85,11 +85,9 @@ const approveMerchant = asyncHandler(async (req, res, next) => {
   return res.status(200).json(
     new apiSuccess(
       true,
-      {
-        message: "Congratulations! The user is now a verified merchant.",
-        merchant: isExistedMerchant, // Include updated merchant details
-      },
-      null,
+      "Congratulations! The user is now a verified merchant.",
+      200,
+      { merchant: isExistedMerchant },
       false
     )
   );

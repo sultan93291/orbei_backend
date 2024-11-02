@@ -10,13 +10,13 @@
 // creatting class for sending apisuccess response
 class apiSuccess {
   constructor(
-    sucess = true,
+    success = true,
     message = null,
     status = 200 < 299,
     Data = null,
     error = false
   ) {
-    (this.succss = sucess),
+    (this.success = success),
       (this.message = message),
       (this.status = status),
       (this.Data = Data);

@@ -15,11 +15,14 @@ const router = Router();
 // Internal dependencies
 
 // All controllers
-
+const {
+  createProduct,
+} = require("../../Controller/productController/createProduct/createProduct");
 
 // Helper files
 const { apiSuccess } = require("../../utils/apiSuccess");
 const { authguard } = require("../../middleware/authGuard");
+const { tempUpload } = require("../../middleware/multer.middleware");
 
 // Base route
 router.route("/get-product-api").get((req, res) => {
@@ -39,18 +42,20 @@ router.route("/get-product-api").get((req, res) => {
 // All Product routes
 
 // POST route for creating a product
-
+router
+  .route("/create-product")
+  .post(
+    authguard,
+    tempUpload.fields([{ name: "image", maxCount: 10 }]),
+    createProduct
+  );
 
 // PUT route for updating a product by ID
 
-
 // DELETE route for deleting a product by ID
-
 
 // GET route for retrieving a single product by ID
 
-
 // GET route for retrieving all products
-
 
 module.exports = router;

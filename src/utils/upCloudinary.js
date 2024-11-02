@@ -27,7 +27,6 @@ const uploadCloudinary = async (localFilePath = "public\\temp\\demo.jpg") => {
     const uploadResult = await cloudinary.uploader.upload(localFilePath, {
       folder: "orebi/product/images/", // Folder path in Cloudinary
     });
-    console.log(uploadResult);
 
     // Delete the local file after successful upload
     fs.unlinkSync(localFilePath, (err) => {
@@ -37,8 +36,10 @@ const uploadCloudinary = async (localFilePath = "public\\temp\\demo.jpg") => {
         console.log("Local file deleted successfully.");
       }
     });
+    return uploadResult
   } catch (error) {
     console.error("Error uploading to Cloudinary:", error);
+    return null
   }
 };
 
