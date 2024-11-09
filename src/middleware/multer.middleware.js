@@ -1,24 +1,44 @@
 /*
  * Author: Md. Abib Ahmed Dipto
  * Date: 01-11-2024
- * Description: This middleware handles file uploads for temporary storage. It utilizes multer to save uploaded files to a temporary directory. Files are saved with their original names in the 'public/temp' folder.
+ * Description: This middleware handles image uploads for temporary storage,
+ *              enforcing orebi-like rules for file types, size, and multiple uploads.
+ *              Files are saved in the 'public/temp/images' folder with their original names.
  */
 
 const multer = require("multer");
 
-// Configure storage options for multer
-const storage = multer.diskStorage({
-  // Define destination directory for uploaded files
+// Configure storage for image uploads
+const imageStorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "./public/temp");
+    cb(null, "./public/temp/images"); // Directory for images
   },
-  // Preserve original file name for the uploaded file
   filename: function (req, file, cb) {
-    cb(null, file.originalname);
+    cb(null, file.originalname); // Use original file name
   },
 });
 
-// Initialize multer with defined storage configuration
-const tempUpload = multer({ storage: storage });
+// Define file filter for images (JPEG, PNG, and optional GIF support)
+const imageFilter = (req, file, cb) => {
+  const filetypes = /jpeg|jpg|png/; // Restrict to JPEG and PNG for Instagram-like behavior
+  const mimetype = filetypes.test(file.mimetype);
+  const extname = filetypes.test(
+    file.originalname.split(".").pop().toLowerCase()
+  );
 
-module.exports = { tempUpload };
+  if (mimetype && extname) {
+    return cb(null, true);
+  }
+  cb(new Error("Only JPEG and PNG files are allowed!"));
+};
+
+// Initialize multer for multiple image uploads with Instagram-like restrictions
+const uploadImages = multer({
+  storage: imageStorage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB limit per file (Instagram-like size limit)
+  fileFilter: imageFilter,
+});
+
+module.exports = {
+  uploadImages
+};

@@ -1,47 +1,58 @@
 /**
  * @fileoverview This module handles uploading images to Cloudinary and removes the local copy after upload.
- * @author Md. Abib Ahmed Dipto
- * @description Uploads an image to a specified Cloudinary folder and deletes the local file upon successful upload.
+ * @description Uploads a single or multiple images to a specified Cloudinary folder and deletes the local file(s) upon successful upload.
  * @date 2024-11-01
- * @copyright © abib.web.dev@gmail.com
  */
 
-// Importing required modules
 const cloudinary = require("cloudinary").v2;
 const fs = require("fs");
 
 // Configuring Cloudinary with environment variables
 cloudinary.config({
-  cloud_name: process.env.CLOUD_SERVER_NAME, // Cloudinary cloud name from environment variables
-  api_key: process.env.CLOUD_API_KEY, // Cloudinary API key from environment variables
-  api_secret: process.env.CLOUD_API_PASS, // Cloudinary API secret (not 'api_proxy', corrected here)
+  cloud_name: process.env.CLOUD_SERVER_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_PASS,
 });
 
 /**
- * Asynchronously uploads an image file to Cloudinary and deletes the local file after upload.
- * @param {string} localFilePath - Path to the local file to be uploaded.
+ * Uploads a single image or multiple images to Cloudinary and deletes local files after a successful upload.
+ * @param {string|string[]} localFilePaths - Path or array of paths to local file(s) to be uploaded.
+ * @param {string} folder - The target folder in Cloudinary for uploaded files (e.g., "profilePictures" or "postImages").
+ * @returns {Promise<Array|Object>} An array of upload results for multiple files, or a single result object for a single file.
  */
-const uploadCloudinary = async (localFilePath = "public\\temp\\demo.jpg") => {
+const uploadCloudinary = async (localFilePaths, folder) => {
   try {
-    // Upload the file to Cloudinary
-    const uploadResult = await cloudinary.uploader.upload(localFilePath, {
-      folder: "orebi/product/images/", // Folder path in Cloudinary
+    // Ensure localFilePaths is an array to handle single or multiple uploads uniformly
+    const files = Array.isArray(localFilePaths)
+      ? localFilePaths
+      : [localFilePaths];
+
+    // Map each file path to a Cloudinary upload promise
+    const uploadPromises = files.map(async (filePath) => {
+      // Check if filePath is a valid string
+      if (typeof filePath !== "string") {
+        console.error("Invalid file path:", filePath);
+        throw new TypeError("Each file path must be a string.");
+      }
+
+      const uploadResult = await cloudinary.uploader.upload(filePath, {
+        folder: `orebi/product/${folder}`, // Use dynamic folder based on function argument
+      });
+
+      fs.unlinkSync(filePath); // Delete the local file after successful upload
+      return uploadResult;
     });
 
-    // Delete the local file after successful upload
-    fs.unlinkSync(localFilePath, (err) => {
-      if (err) {
-        console.error("Error deleting local file:", err);
-      } else {
-        console.log("Local file deleted successfully.");
-      }
-    });
-    return uploadResult
+    // Wait for all uploads to complete
+    const results = await Promise.all(uploadPromises);
+
+    // Return single result if only one file was uploaded
+    return files.length === 1 ? results[0] : results;
   } catch (error) {
-    console.error("Error uploading to Cloudinary:", error);
-    return null
+    console.error("Error uploading images to Cloudinary:", error);
+    throw new Error("Image upload failed");
   }
 };
 
-// Exporting the upload function for use in other modules
+// Exporting the function for use in other modules
 module.exports = { uploadCloudinary };

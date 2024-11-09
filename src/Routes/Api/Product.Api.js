@@ -22,7 +22,7 @@ const {
 // Helper files
 const { apiSuccess } = require("../../utils/apiSuccess");
 const { authguard } = require("../../middleware/authGuard");
-const { tempUpload } = require("../../middleware/multer.middleware");
+const { uploadImages } = require("../../middleware/multer.middleware");
 
 // Base route
 router.route("/get-product-api").get((req, res) => {
@@ -46,7 +46,7 @@ router
   .route("/create-product")
   .post(
     authguard,
-    tempUpload.fields([{ name: "image", maxCount: 10 }]),
+    uploadImages.fields([{ name: "image", maxCount: 10 }]),
     createProduct
   );
 

@@ -80,7 +80,7 @@ const productSchema = new Schema(
 
     // Product image URL
     image: {
-      type: String,
+      type: [String],
       required: [true, "Product image is required"],
     },
   },

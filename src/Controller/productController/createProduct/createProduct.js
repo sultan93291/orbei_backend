@@ -70,12 +70,12 @@ const createProduct = asyncHandler(async (req, res, next) => {
     }
   }
 
-  const image = req.files?.image;
+  const images = req.files?.image;
   // Validate that an image is provided
-  if (!image) {
+  if (!images) {
     return next(
       new apiError(
-        500,
+        400,
         `Please provide one picture for posting a product`,
         null,
         false
@@ -83,8 +83,22 @@ const createProduct = asyncHandler(async (req, res, next) => {
     );
   }
 
+  const isExistedPoduct = await productModel.findOne({
+    owner: DecodedData?.Data?.userId,
+  });
+
+  if (name === isExistedPoduct?.name) {
+    return next(new apiError(401, `product already exists`, null, false));
+  }
+
+  // Extract just the `path` strings from each image object
+  const imagePaths = images.map((image) => image.path).filter(Boolean); // Ensure `image.path` exists
+
   // Upload the image to Cloudinary
-  const imageUploadInfo = await uploadCloudinary(image[0].path);
+  const imageUploadInfo = await uploadCloudinary(imagePaths, "images");
+
+  // get every single image urls
+  const imageUrls = await imageUploadInfo.map((url) => url.secure_url);
 
   // Create a new product instance
   const newProduct = new productModel({
@@ -95,7 +109,7 @@ const createProduct = asyncHandler(async (req, res, next) => {
     discountPrice,
     owner: DecodedData?.Data?.userId,
     merchantId: isMerchant._id,
-    image: imageUploadInfo.secure_url,
+    image: imageUrls,
     ...(subCategory && { subCategory }),
   });
 
@@ -118,7 +132,13 @@ const createProduct = asyncHandler(async (req, res, next) => {
   return res
     .status(200)
     .json(
-      new apiSuccess(true, "Product created successfully",200, savedProduct, false)
+      new apiSuccess(
+        true,
+        "Product created successfully",
+        200,
+        savedProduct,
+        false
+      )
     );
 });
 
