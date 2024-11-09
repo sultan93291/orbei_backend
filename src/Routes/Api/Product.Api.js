@@ -18,11 +18,15 @@ const router = Router();
 const {
   createProduct,
 } = require("../../Controller/productController/createProduct/createProduct");
+const {
+  getAllProducts,
+} = require("../../Controller/productController/getProduct/getProduct");
 
 // Helper files
 const { apiSuccess } = require("../../utils/apiSuccess");
 const { authguard } = require("../../middleware/authGuard");
 const { uploadImages } = require("../../middleware/multer.middleware");
+
 
 // Base route
 router.route("/get-product-api").get((req, res) => {
@@ -57,5 +61,6 @@ router
 // GET route for retrieving a single product by ID
 
 // GET route for retrieving all products
+router.route("/get-all-products").get(getAllProducts);
 
 module.exports = router;
