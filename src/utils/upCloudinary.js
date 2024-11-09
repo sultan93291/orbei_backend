@@ -5,6 +5,7 @@
  */
 
 const cloudinary = require("cloudinary").v2;
+const { log } = require("console");
 const fs = require("fs");
 
 // Configuring Cloudinary with environment variables
@@ -54,5 +55,42 @@ const uploadCloudinary = async (localFilePaths, folder) => {
   }
 };
 
+const deleteCloudinaryAssets = async (imagePaths) => {
+  try {
+    let allDeleted = true;
+    console.log("Image paths to delete:", imagePaths);
+
+    for (let imgLocation of imagePaths) {
+      const publicId = imgLocation.split("/").pop().split(".").shift();
+      console.log("Extracted publicId:", publicId);
+
+      const deletedItems = await cloudinary.api.delete_resources(
+        `orebi/product/images/${publicId}`,
+        {
+          type: "upload",
+          resource_type: "image",
+        }
+      );
+
+      // Log the entire deletion response for debugging
+      console.log("Deletion response for", publicId, ":", deletedItems);
+
+      // Verify deletion status with full path matching the response
+      const deletionStatus =
+        deletedItems?.deleted?.[`orebi/product/images/${publicId}`];
+      if (deletionStatus !== "deleted") {
+        allDeleted = false;
+        console.warn(
+          `Image with publicId ${publicId} could not be verified as deleted.`
+        );
+      }
+    }
+    return allDeleted;
+  } catch (error) {
+    console.error(`Error deleting images: ${error.message}`);
+    return false;
+  }
+};
+
 // Exporting the function for use in other modules
-module.exports = { uploadCloudinary };
+module.exports = { uploadCloudinary, deleteCloudinaryAssets };

@@ -21,12 +21,14 @@ const {
 const {
   getAllProducts,
 } = require("../../Controller/productController/getProduct/getProduct");
+const {
+  updateProduct,
+} = require("../../Controller/productController/updateProduct/updateProduct");
 
 // Helper files
 const { apiSuccess } = require("../../utils/apiSuccess");
 const { authguard } = require("../../middleware/authGuard");
 const { uploadImages } = require("../../middleware/multer.middleware");
-
 
 // Base route
 router.route("/get-product-api").get((req, res) => {
@@ -55,6 +57,9 @@ router
   );
 
 // PUT route for updating a product by ID
+router
+  .route("/update-product/:id")
+  .put(authguard, uploadImages.fields([{ name: "image", maxCount: 10 }]), updateProduct);
 
 // DELETE route for deleting a product by ID
 
