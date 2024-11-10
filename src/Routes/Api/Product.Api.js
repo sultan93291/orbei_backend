@@ -29,6 +29,7 @@ const {
 const { apiSuccess } = require("../../utils/apiSuccess");
 const { authguard } = require("../../middleware/authGuard");
 const { uploadImages } = require("../../middleware/multer.middleware");
+const { getSingleProduct } = require("../../Controller/productController/getSingleProduct/getSingleProduct");
 
 // Base route
 router.route("/get-product-api").get((req, res) => {
@@ -64,8 +65,9 @@ router
 // DELETE route for deleting a product by ID
 
 // GET route for retrieving a single product by ID
+router.route("/get-product/:id").get(authguard, getSingleProduct);
 
 // GET route for retrieving all products
-router.route("/get-all-products").get(getAllProducts);
+router.route("/get-all-products").get(authguard,getAllProducts);
 
 module.exports = router;

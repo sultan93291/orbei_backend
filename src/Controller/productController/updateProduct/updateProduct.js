@@ -53,6 +53,16 @@ const updateProduct = asyncHandler(async (req, res, next) => {
     );
   }
 
+    // Check if the product exists
+  const isExistedProduct = await productModel.findById(id);
+  if (!isExistedProduct) {
+    return next(new apiError(404, "Product not found", null, false));
+  }
+
+  if (DecodedData?.Data?.userId !== isExistedProduct.owner) {
+    return next(new apiError(401, "Sorry this product doesn't belongs to you , you can't update it. ", null, false));
+  }
+
   // Normalize images to be an array, handling both single and multiple uploads
   let images = req.files?.image;
   if (images && !Array.isArray(images)) {
@@ -67,11 +77,6 @@ const updateProduct = asyncHandler(async (req, res, next) => {
     return next(new apiError(400, `Nothing to update`, null, false));
   }
 
-  // Check if the product exists
-  const isExistedProduct = await productModel.findById(id);
-  if (!isExistedProduct) {
-    return next(new apiError(404, "Product not found", null, false));
-  }
 
   // Upload new images if provided
   let imageUrls = [];
