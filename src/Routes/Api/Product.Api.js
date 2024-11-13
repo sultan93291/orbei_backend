@@ -24,12 +24,19 @@ const {
 const {
   updateProduct,
 } = require("../../Controller/productController/updateProduct/updateProduct");
+const {
+  getSingleProduct,
+} = require("../../Controller/productController/getSingleProduct/getSingleProduct");
+const {
+  searchProduct,
+} = require("../../Controller/productController/searchProduct/searchProduct");
 
 // Helper files
 const { apiSuccess } = require("../../utils/apiSuccess");
 const { authguard } = require("../../middleware/authGuard");
 const { uploadImages } = require("../../middleware/multer.middleware");
-const { getSingleProduct } = require("../../Controller/productController/getSingleProduct/getSingleProduct");
+
+
 
 // Base route
 router.route("/get-product-api").get((req, res) => {
@@ -68,6 +75,9 @@ router
 router.route("/get-product/:id").get(authguard, getSingleProduct);
 
 // GET route for retrieving all products
-router.route("/get-all-products").get(authguard,getAllProducts);
+router.route("/get-all-products").get(authguard, getAllProducts);
+
+// GET route for seaching a product
+router.route("/product-search").get(authguard, searchProduct)
 
 module.exports = router;
