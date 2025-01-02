@@ -30,11 +30,15 @@ const {
 const {
   searchProduct,
 } = require("../../Controller/productController/searchProduct/searchProduct");
+const {
+  deleteProduct,
+} = require("../../Controller/productController/deleteProduct/deleteProduct");
 
 // Helper files
 const { apiSuccess } = require("../../utils/apiSuccess");
 const { authguard } = require("../../middleware/authGuard");
 const { uploadImages } = require("../../middleware/multer.middleware");
+
 
 
 
@@ -78,6 +82,9 @@ router.route("/get-product/:id").get(authguard, getSingleProduct);
 router.route("/get-all-products").get(authguard, getAllProducts);
 
 // GET route for seaching a product
-router.route("/product-search").get(authguard, searchProduct)
+router.route("/product-search").get(authguard, searchProduct);
+
+// DELETE route for deleting a product
+router.route("/delete-product/:id").delete(authguard, deleteProduct);
 
 module.exports = router;

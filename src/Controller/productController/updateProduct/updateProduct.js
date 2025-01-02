@@ -46,7 +46,7 @@ const updateProduct = asyncHandler(async (req, res, next) => {
     return next(
       new apiError(
         401,
-        `Sorry, only a merchant can post a product`,
+        `Sorry, only a merchant can update a product`,
         null,
         false
       )

@@ -143,7 +143,7 @@ const CreateUser = asyncHandler(async (req, res, next) => {
 
     const registeredUser = await user
       .find({ $or: [{ emailAddress }] })
-      .select("-password");
+      .select("-password -refreshToken");
 
     // If successfull return a success response
     return res
